@@ -15,6 +15,20 @@
       "when": 1794004258306,
       "tag": "0001_create_user_on_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794006921265,
+      "tag": "0002_create_crm_tables",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794006933939,
+      "tag": "0003_seed_defaults",
+      "breakpoints": true
     }
   ]
 }

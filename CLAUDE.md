@@ -44,7 +44,22 @@ etapa. Siga a ordem de implementação da seção 8.
   redirecionamento rápido e não protege dados.
 - **Login**: Supabase Auth com e-mail e senha, sem cadastro aberto. O trigger
   `on_auth_user_created` cria a linha em `users` quando um login é criado.
-- Schema em `src/db/schema/` (um arquivo por tabela); migrations em `drizzle/`.
+- **Schema** em `src/db/schema/`, um arquivo por área:
+  - `enums.ts`: valores fixos;
+  - `common.ts`: `id()`, `timestamps`, `deletedAt()` e `authenticatedCan()`, para as políticas de RLS;
+  - `catalog.ts`: cadastros e `settings`;
+  - `experts.ts`: experts, tags e activities;
+  - `cadences.ts`: cadências e tarefas;
+  - `deals.ts`: reuniões, propostas e projetos.
+- **Migrations** em `drizzle/`. Os dados iniciais (etapas, planos, nichos,
+  templates etc.) ficam em `drizzle/0003_seed_defaults.sql`.
+- **Regras garantidas pelo próprio banco:**
+  - @ + plataforma único entre leads não excluídos;
+  - uma cadência ativa por lead;
+  - sem exclusão definitiva de experts, templates, propostas e projetos;
+  - `activities` só aceita leitura e inclusão;
+  - divisão de receita soma 100%;
+  - `settings` tem uma linha só.
 - URLs em português (`/login`), pois são vistas pelo usuário; o resto do
   código fica em inglês.
 
@@ -82,11 +97,24 @@ etapa. Siga a ordem de implementação da seção 8.
   ficam com RLS ligada e só usuários logados (papel `authenticated`) acessam.
   As políticas por perfil (ex.: SDR vê só os seus leads) entram quando houver
   SDRs e Closers.
+- **2026-11-06 — Ajustes no modelo da seção 5 (Etapa 2):**
+  - `experts` ganhou `loss_reason_id` e `loss_note` (motivo da perda; a nota
+    serve para o motivo "Outro").
+  - Sem `settings.stage_limits`: o limite de dias parado fica só em `stages.max_days`.
+  - `templates.stage` é a categoria da mensagem (abordagem, follow-up, quebra de
+    objeção, convite para diagnóstico, encerramento, script), não a etapa do
+    pipeline. Os scripts de ligação e o roteiro de diagnóstico usam o canal `call`.
+  - Novo canal e tipo de atividade `interaction` (seguir e interagir).
+  - `content_frequency` é sim/não, como as outras perguntas de qualificação.
+  - `settings` é linha única com `score_weights`, `accepted_proposal_stage_id`
+    (padrão: Negociação) e `reactivation_days` (60).
+  - Valores em reais com centavos. Soft delete também em `templates`.
+  - Status de reunião: agendada, realizada, cancelada e não compareceu.
 
 ## Progresso (seção 8)
 
 - [x] 1. Setup do projeto + login (concluída em 2026-11-06)
-- [ ] 2. Banco: tabelas, migrations e seed
+- [x] 2. Banco: tabelas, migrations e seed (concluída em 2026-11-06)
 - [ ] 3. Experts
 - [ ] 4. Score
 - [ ] 5. Pipeline
