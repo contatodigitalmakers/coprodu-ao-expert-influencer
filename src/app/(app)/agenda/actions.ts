@@ -17,7 +17,8 @@ const meetingSchema = z.object({
     .trim()
     .max(500)
     .transform((value) => value || null)
-    .pipe(z.url("Link da chamada inválido.").nullable()),
+    // Só http/https: um link "javascript:" executaria código ao ser clicado.
+    .pipe(z.url({ protocol: /^https?$/, error: "Link da chamada inválido (use http:// ou https://)." }).nullable()),
   closerId: z.uuid("Escolha o responsável (Closer)."),
 });
 

@@ -38,7 +38,10 @@ async function main() {
       await page.getByText("Agendar diagnóstico", { exact: true }).filter(visible).click();
       await page.getByLabel("Link da chamada", { exact: true }).fill("meet sem link");
       await page.getByRole("button", { name: "Agendar diagnóstico" }).click();
-      await page.getByText("Link da chamada inválido.").filter(visible).waitFor();
+      await page.getByText("Link da chamada inválido (use http:// ou https://).").filter(visible).waitFor();
+      await page.getByLabel("Link da chamada", { exact: true }).fill("javascript:alert(1)");
+      await page.getByRole("button", { name: "Agendar diagnóstico" }).click();
+      await page.getByText("Link da chamada inválido (use http:// ou https://).").filter(visible).waitFor();
     });
 
     await step(page, "Agenda mostra a reunião em Próximas", async () => {

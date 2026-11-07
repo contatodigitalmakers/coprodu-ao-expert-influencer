@@ -174,6 +174,44 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-07 — Segurança e deploy (Etapa 12):**
+  - **Auditoria automática** em `tests/db/etapa12.ts`:
+    - RLS ligada nas 18 tabelas;
+    - nenhuma política para anon ou public;
+    - sem exclusão definitiva em tabelas de histórico;
+    - todas as funções com `search_path` fixo;
+    - o anon só executa `get_public_proposal` e `respond_to_proposal`;
+    - a API pública não lê nem grava nada;
+    - cadastro aberto desligado.
+  - **Correções:**
+    - o link da reunião aceita só http/https (um `javascript:` executaria
+      código ao ser clicado);
+    - cabeçalhos de segurança em `next.config.ts` (frame-ancestors, nosniff,
+      referrer, permissions);
+    - `shadcn` passou para devDependencies, e o `npm audit --omit=dev` ficou em
+      0 vulnerabilidades (os alertas restantes são de ferramentas de
+      desenvolvimento).
+  - **Deploy:** `vercel.json` deixa as funções em São Paulo (`gru1`). O passo a
+    passo está no README.
+    - **Pendente, por depender do usuário:** o repositório remoto
+      `contatodigitalmakers/coprodu-ao-expert-influencer` é **público** e a conta
+      `joshceccon` só tem leitura nele, então o código não foi enviado;
+    - a CLI da Vercel não está instalada nem com login.
+  - O usuário de teste foi apagado no fim. Para rodar `tests/e2e`, crie-o de
+    novo com `tests/e2e/test-user.ts create`.
+  - O `tests/e2e/etapa8.ts` registra resultados em templates reais e aumenta
+    `times_used`/`times_replied`. Num banco com uso real, não zere os
+    contadores depois.
+  - **Plano para quando houver SDRs e Closers** (hoje todos são admin):
+    - criar `has_role(role)` no mesmo padrão de `is_admin()` e trocar as
+      políticas `authenticated_can_*` por políticas por perfil;
+    - SDR: experts com `owner_id = auth.uid()` e as tarefas dele;
+    - Closer: leads a partir de "Diagnóstico agendado", mais propostas e
+      reuniões;
+    - SDR não vê valores de propostas aceitas de outros usuários nem o
+      dashboard financeiro;
+    - mudar o padrão `'admin'` do gatilho `handle_new_auth_user` e criar a tela
+      de usuários.
 - **2026-11-07 — Dashboard (Etapa 11):**
   - Página `/dashboard`; as consultas ficam em `src/lib/dashboard/queries.ts`.
   - **Filtros**, numa linha acima de tudo e valendo para todos os números:
@@ -311,4 +349,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 9. Agenda e diagnóstico (concluída em 2026-11-06)
 - [x] 10. Propostas (concluída em 2026-11-06)
 - [x] 11. Dashboard (concluída em 2026-11-07)
-- [ ] 12. Revisão de permissões (RLS), segurança e deploy
+- [x] 12. Revisão de permissões (RLS) e segurança (concluída em 2026-11-07).
+  O deploy está pronto, mas depende do GitHub e da Vercel do usuário (ver README).
