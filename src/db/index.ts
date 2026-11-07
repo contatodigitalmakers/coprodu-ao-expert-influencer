@@ -33,3 +33,12 @@ export function runAsUser<T>(claims: JwtPayload, fn: (tx: Tx) => Promise<T>) {
     return fn(tx);
   });
 }
+
+// Executa como visitante sem login (papel "anon"). Usado só pela página pública
+// da proposta, que chama funções do banco feitas para isso (migration 0010).
+export function runAsAnon<T>(fn: (tx: Tx) => Promise<T>) {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`set local role anon`);
+    return fn(tx);
+  });
+}

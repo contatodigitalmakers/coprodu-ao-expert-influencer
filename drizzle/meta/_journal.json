@@ -71,6 +71,13 @@
       "when": 1794013541339,
       "tag": "0009_users_update_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1794014409320,
+      "tag": "0010_proposals_public",
+      "breakpoints": true
     }
   ]
 }

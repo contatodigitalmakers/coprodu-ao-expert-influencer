@@ -3,9 +3,10 @@
 import { eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { settings, stages, users } from "@/db/schema";
+import { plans, settings, stages, users } from "@/db/schema";
 import type { ScoreWeights } from "@/db/schema/catalog";
 import { queryAsUser, requireAdmin } from "@/lib/auth";
+import { parseMoney } from "@/lib/proposals/calc";
 import { SCORE_CRITERIA } from "@/lib/score";
 import { getStagesWithCounts, recalculateAllScores } from "@/lib/settings";
 
@@ -119,4 +120,54 @@ export async function saveDailyGoals(rows: z.input<typeof goalsSchema>): Promise
   });
   refresh();
   return { message: "Metas salvas.", savedAt: Date.now() };
+}
+
+const plansSchema = z
+  .array(
+    z.object({
+      id: z.uuid().nullable(),
+      name: z.string().trim().min(1, "Todo plano precisa de nome.").max(60),
+      setupValue: z
+        .string()
+        .transform(parseMoney)
+        .refine((value) => Number.isFinite(value) && value >= 0, "Valor de setup inválido."),
+      expertShare: z.coerce.number().int("A divisão deve ser um número inteiro.").min(0).max(100, "A divisão vai de 0 a 100%."),
+      active: z.boolean(),
+    }),
+  )
+  .min(1, "É preciso ter pelo menos um plano.");
+
+// Planos de setup e divisão (seção 3.8). Propostas já criadas não mudam (regra 8).
+export async function savePlans(rows: z.input<typeof plansSchema>): Promise<SettingsFormState> {
+  await requireAdmin();
+  const parsed = plansSchema.safeParse(rows);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  await queryAsUser(async (tx) => {
+    for (const row of parsed.data) {
+      const values = { name: row.name, setupValue: row.setupValue, expertShare: row.expertShare, ourShare: 100 - row.expertShare, active: row.active };
+      if (row.id) await tx.update(plans).set(values).where(eq(plans.id, row.id));
+      else await tx.insert(plans).values(values);
+    }
+  });
+  refresh();
+  return { message: "Planos salvos.", savedAt: Date.now() };
+}
+
+const generalSchema = z.object({
+  acceptedProposalStageId: z.uuid("Escolha a etapa."),
+  reactivationDays: z.coerce.number().int("Use um número inteiro.").min(1, "Mínimo 1 dia.").max(365, "Máximo 365 dias."),
+});
+
+// Etapa da proposta aceita e dias até a reativação.
+export async function saveGeneralSettings(values: z.input<typeof generalSchema>): Promise<SettingsFormState> {
+  await requireAdmin();
+  const parsed = generalSchema.safeParse(values);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  await queryAsUser(async (tx) => {
+    const [stage] = await tx.select().from(stages).where(eq(stages.id, parsed.data.acceptedProposalStageId));
+    if (!stage || stage.isWon || stage.isLost) throw new Error("Etapa inválida para proposta aceita.");
+    await tx.update(settings).set(parsed.data);
+  });
+  refresh();
+  return { message: "Parâmetros salvos.", savedAt: Date.now() };
 }

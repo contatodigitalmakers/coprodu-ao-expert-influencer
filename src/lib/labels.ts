@@ -1,4 +1,13 @@
-import type { ActivityType, Channel, EnrollmentStatus, MeetingStatus, Platform, TaskOutcome, TemplateStage } from "@/db/schema/enums";
+import type {
+  ActivityType,
+  Channel,
+  EnrollmentStatus,
+  MeetingStatus,
+  Platform,
+  ProposalStatus,
+  TaskOutcome,
+  TemplateStage,
+} from "@/db/schema/enums";
 
 // Textos em português dos valores fixos do banco (enums).
 
@@ -73,4 +82,12 @@ export const MEETING_STATUS_LABELS: Record<MeetingStatus, string> = {
   done: "Realizada",
   canceled: "Cancelada",
   no_show: "Não compareceu",
+};
+
+export const PROPOSAL_STATUS_LABELS: Record<ProposalStatus, string> = {
+  draft: "Rascunho",
+  sent: "Enviada",
+  viewed: "Visualizada",
+  accepted: "Aceita",
+  rejected: "Recusada",
 };

@@ -1,12 +1,12 @@
 import { and, eq, isNull } from "drizzle-orm";
 import type { Tx } from "@/db";
-import { activities, experts, meetings, stages, users } from "@/db/schema";
+import { activities, experts, meetings, users } from "@/db/schema";
 import type { DiagnosisForm } from "@/db/schema/deals";
 import type { MeetingStatus } from "@/db/schema/enums";
 import { getStageByKey } from "@/lib/experts/mutations";
 import { formatDateTime } from "@/lib/format";
 import { MEETING_STATUS_LABELS } from "@/lib/labels";
-import { moveExpert } from "@/lib/pipeline/move";
+import { advanceExpertTo } from "@/lib/pipeline/move";
 
 export class MeetingError extends Error {}
 
@@ -17,17 +17,8 @@ export function toScheduledAt(date: string, time: string) {
   return value;
 }
 
-// Avança o lead até a etapa (se ele ainda estiver antes dela e não estiver ganho/perdido).
 async function advanceTo(tx: Tx, expertId: string, stageKey: string, userId: string) {
-  const target = await getStageByKey(tx, stageKey);
-  const [current] = await tx
-    .select({ order: stages.order, isWon: stages.isWon, isLost: stages.isLost })
-    .from(experts)
-    .innerJoin(stages, eq(stages.id, experts.stageId))
-    .where(eq(experts.id, expertId));
-  if (current && !current.isWon && !current.isLost && current.order < target.order) {
-    await moveExpert(tx, { expertId, toStageId: target.id }, userId);
-  }
+  await advanceExpertTo(tx, expertId, (await getStageByKey(tx, stageKey)).id, userId);
 }
 
 async function closerName(tx: Tx, closerId: string) {

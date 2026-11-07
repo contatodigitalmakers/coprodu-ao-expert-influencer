@@ -3,9 +3,11 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser, queryAsUser } from "@/lib/auth";
-import { getSettings, getStagesWithCounts, getUsersWithGoals } from "@/lib/settings";
+import { getAllPlans, getSettings, getStagesWithCounts, getUsersWithGoals } from "@/lib/settings";
 import { DEFAULT_DAILY_GOAL } from "@/lib/queue/queries";
-import { saveDailyGoals, saveScoreWeights, saveStages } from "./actions";
+import { saveDailyGoals, saveGeneralSettings, savePlans, saveScoreWeights, saveStages } from "./actions";
+import { GeneralForm } from "./_components/general-form";
+import { PlansForm } from "./_components/plans-form";
 import { DailyGoalsForm } from "./_components/daily-goals-form";
 import { ScoreWeightsForm } from "./_components/score-weights-form";
 import { StagesForm } from "./_components/stages-form";
@@ -30,10 +32,11 @@ async function SettingsSections() {
   if (user.role !== "admin") {
     return <p className="text-sm text-muted-foreground">Acesso restrito ao Admin.</p>;
   }
-  const [settings, stages, goals] = await Promise.all([
+  const [settings, stages, goals, plans] = await Promise.all([
     queryAsUser(getSettings),
     queryAsUser(getStagesWithCounts),
     queryAsUser(getUsersWithGoals),
+    queryAsUser(getAllPlans),
   ]);
 
   return (
@@ -41,6 +44,12 @@ async function SettingsSections() {
       <ScoreWeightsForm weights={settings.scoreWeights} action={saveScoreWeights} />
       <StagesForm stages={stages} action={saveStages} />
       <DailyGoalsForm users={goals} defaultGoal={DEFAULT_DAILY_GOAL} action={saveDailyGoals} />
+      <PlansForm plans={plans} action={savePlans} />
+      <GeneralForm
+        stages={stages.filter((stage) => !stage.isWon && !stage.isLost)}
+        defaults={{ acceptedProposalStageId: settings.acceptedProposalStageId, reactivationDays: settings.reactivationDays }}
+        action={saveGeneralSettings}
+      />
     </div>
   );
 }

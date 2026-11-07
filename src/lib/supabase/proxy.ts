@@ -1,7 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login"];
+// Páginas abertas sem login: login e proposta pública (/p/<token>).
+const isPublic = (pathname: string) => pathname === "/login" || pathname.startsWith("/p/");
 
 // Roda antes de cada página: renova a sessão do Supabase (cookies) e faz o
 // redirecionamento rápido de quem não está logado. A checagem definitiva fica
@@ -31,10 +32,10 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const isLoggedIn = Boolean(data?.claims);
-  const isPublicPath = PUBLIC_PATHS.includes(request.nextUrl.pathname);
+  const { pathname } = request.nextUrl;
 
-  if (!isLoggedIn && !isPublicPath) return redirectTo("/login", request, response);
-  if (isLoggedIn && isPublicPath) return redirectTo("/", request, response);
+  if (!isLoggedIn && !isPublic(pathname)) return redirectTo("/login", request, response);
+  if (isLoggedIn && pathname === "/login") return redirectTo("/", request, response);
 
   return response;
 }

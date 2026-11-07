@@ -101,3 +101,17 @@ export function moveErrorMessage(error: unknown) {
   if (isUniqueViolation(error, "projects_proposal_id_unique")) return "Esta proposta já tem um projeto.";
   return null;
 }
+
+// Avança o lead até a etapa, se ele ainda estiver antes dela e não estiver
+// ganho nem perdido (usado por reuniões e propostas).
+export async function advanceExpertTo(tx: Tx, expertId: string, stageId: string, userId: string | null) {
+  const [target] = await tx.select().from(stages).where(eq(stages.id, stageId));
+  const [current] = await tx
+    .select({ order: stages.order, isWon: stages.isWon, isLost: stages.isLost })
+    .from(experts)
+    .innerJoin(stages, eq(stages.id, experts.stageId))
+    .where(eq(experts.id, expertId));
+  if (target && !target.isWon && !target.isLost && current && !current.isWon && !current.isLost && current.order < target.order) {
+    await moveExpert(tx, { expertId, toStageId: target.id }, userId);
+  }
+}

@@ -174,6 +174,30 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-06 — Propostas (Etapa 10):**
+  - A lógica fica em `src/lib/proposals/`.
+  - **Valores:** setup, divisão e extras são copiados do plano para a proposta.
+    O gatilho `proposals_freeze_accepted` congela os valores depois de aceita
+    (regra 8).
+  - **Status:**
+    - rascunho (editável), enviada, visualizada, aceita e recusada;
+    - "Enviada" leva o lead para "Proposta enviada";
+    - "Aceita" leva o lead para `settings.accepted_proposal_stage_id`, que por
+      padrão é Negociação e nunca é Ganho, porque Ganho exige contrato e
+      pagamento e é marcado no pipeline.
+  - **Página pública `/p/<token>`:**
+    - abre sem login (o proxy libera `/p/`) e usa `runAsAnon()`;
+    - só chama as funções `get_public_proposal` (que registra a visualização) e
+      `respond_to_proposal`, ambas `security definer` (migration 0010);
+    - o visitante sem login continua sem ler nenhuma tabela;
+    - rascunho não abre: mostra "Página não encontrada". O status HTTP é 200
+      por causa do streaming, mas o conteúdo não aparece;
+    - o PDF é a impressão do navegador ("Baixar PDF" chama `window.print()`).
+  - O envio por e-mail (Resend) não foi feito: o link é copiado e enviado pelo
+    canal que a equipe preferir.
+  - **Configurações:** planos (setup e % do expert) e parâmetros gerais (etapa da
+    proposta aceita e dias até a reativação).
+  - `src/app/not-found.tsx` é a página de "não encontrado", em português.
 - **2026-11-06 — Agenda e diagnóstico (Etapa 9):**
   - A lógica fica em `src/lib/meetings/mutations.ts`.
   - **Agendamento pela ficha:** data, hora e responsável (Closer), no horário de
@@ -261,6 +285,6 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 7. Cadências (concluída em 2026-11-06)
 - [x] 8. Fila do dia (concluída em 2026-11-06)
 - [x] 9. Agenda e diagnóstico (concluída em 2026-11-06)
-- [ ] 10. Propostas
+- [x] 10. Propostas (concluída em 2026-11-06)
 - [ ] 11. Dashboard
 - [ ] 12. Revisão de permissões (RLS), segurança e deploy

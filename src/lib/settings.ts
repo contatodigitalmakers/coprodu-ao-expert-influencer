@@ -1,6 +1,6 @@
 import { asc, eq, isNull, sql } from "drizzle-orm";
 import type { Tx } from "@/db";
-import { experts, settings, stages, users } from "@/db/schema";
+import { experts, plans, settings, stages, users } from "@/db/schema";
 import type { ScoreWeights } from "@/db/schema/catalog";
 import { computeScore } from "./score";
 
@@ -69,4 +69,11 @@ export async function getUsersWithGoals(tx: Tx) {
     .from(users)
     .where(eq(users.active, true))
     .orderBy(asc(users.name));
+}
+
+export async function getAllPlans(tx: Tx) {
+  return tx
+    .select({ id: plans.id, name: plans.name, setupValue: plans.setupValue, expertShare: plans.expertShare, active: plans.active })
+    .from(plans)
+    .orderBy(asc(plans.setupValue));
 }

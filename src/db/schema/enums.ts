@@ -67,3 +67,4 @@ export type TemplateStage = (typeof templateStage.enumValues)[number];
 export type TaskOutcome = (typeof taskOutcome.enumValues)[number];
 export type EnrollmentStatus = (typeof enrollmentStatus.enumValues)[number];
 export type MeetingStatus = (typeof meetingStatus.enumValues)[number];
+export type ProposalStatus = (typeof proposalStatus.enumValues)[number];
