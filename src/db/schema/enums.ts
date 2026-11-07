@@ -66,3 +66,4 @@ export type Channel = (typeof channel.enumValues)[number];
 export type TemplateStage = (typeof templateStage.enumValues)[number];
 export type TaskOutcome = (typeof taskOutcome.enumValues)[number];
 export type EnrollmentStatus = (typeof enrollmentStatus.enumValues)[number];
+export type MeetingStatus = (typeof meetingStatus.enumValues)[number];

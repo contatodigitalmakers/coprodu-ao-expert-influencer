@@ -1,4 +1,4 @@
-import type { ActivityType, Channel, EnrollmentStatus, Platform, TaskOutcome, TemplateStage } from "@/db/schema/enums";
+import type { ActivityType, Channel, EnrollmentStatus, MeetingStatus, Platform, TaskOutcome, TemplateStage } from "@/db/schema/enums";
 
 // Textos em português dos valores fixos do banco (enums).
 
@@ -66,4 +66,11 @@ export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
   active: "Ativa",
   paused: "Pausada (lead respondeu)",
   finished: "Encerrada",
+};
+
+export const MEETING_STATUS_LABELS: Record<MeetingStatus, string> = {
+  scheduled: "Agendada",
+  done: "Realizada",
+  canceled: "Cancelada",
+  no_show: "Não compareceu",
 };

@@ -174,6 +174,17 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-06 — Agenda e diagnóstico (Etapa 9):**
+  - A lógica fica em `src/lib/meetings/mutations.ts`.
+  - **Agendamento pela ficha:** data, hora e responsável (Closer), no horário de
+    Brasília (`-03:00`, sem horário de verão). Leva o lead para "Diagnóstico
+    agendado", se ele estiver antes dessa etapa e não estiver ganho nem perdido.
+  - **`/agenda`:** próximas reuniões e as dos últimos 30 dias, com filtro
+    "Minhas" ou "Todas".
+  - **`/agenda/[id]`:** formulário de diagnóstico (`meetings.diagnosis`, tipo
+    `DiagnosisForm`), roteiros (templates da categoria "script") e reagendamento.
+  - **Status:** "Realizada" leva o lead para "Diagnóstico realizado"; "Não
+    compareceu" e "Cancelada" só ficam registrados. Tudo vai para a linha do tempo.
 - **2026-11-06 — Fila do dia (Etapa 8):**
   - A tela inicial ("/") é a fila do dia: tarefas pendentes de hoje e
     atrasadas do usuário, agrupadas por canal (`src/lib/queue/queries.ts`).
@@ -249,7 +260,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 6. Templates (concluída em 2026-11-06)
 - [x] 7. Cadências (concluída em 2026-11-06)
 - [x] 8. Fila do dia (concluída em 2026-11-06)
-- [ ] 9. Agenda e diagnóstico
+- [x] 9. Agenda e diagnóstico (concluída em 2026-11-06)
 - [ ] 10. Propostas
 - [ ] 11. Dashboard
 - [ ] 12. Revisão de permissões (RLS), segurança e deploy

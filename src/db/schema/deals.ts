@@ -32,7 +32,7 @@ export const meetings = pgTable(
     scheduledAt: timestamp("scheduled_at", { withTimezone: true }).notNull(),
     link: text("link"),
     status: meetingStatus("status").notNull().default("scheduled"),
-    diagnosis: jsonb("diagnosis").$type<Record<string, unknown>>(), // formulário de diagnóstico
+    diagnosis: jsonb("diagnosis").$type<DiagnosisForm>(), // formulário de diagnóstico
     ...timestamps,
   },
   (t) => [
@@ -40,6 +40,16 @@ export const meetings = pgTable(
     ...authenticatedCan("select", "insert", "update", "delete"),
   ],
 );
+
+// Formulário de diagnóstico preenchido na reunião (seção 3.7).
+export type DiagnosisForm = {
+  audience?: string;
+  currentProducts?: string;
+  approxRevenue?: string;
+  appIdea?: string;
+  planInterestId?: string | null;
+  objections?: string;
+};
 
 export type ProposalExtra = {
   name: string;

@@ -25,12 +25,15 @@ import { profileLink, whatsappLink } from "@/lib/experts/links";
 import { getExpert, getTimeline, type ExpertDetail, type TimelineItem } from "@/lib/experts/queries";
 import { daysSince, getStageOptions } from "@/lib/pipeline/queries";
 import { getActiveCadenceOptions, getExpertCadence } from "@/lib/cadences/queries";
-import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp, plural } from "@/lib/format";
+import { getExpertMeetings } from "@/lib/meetings/queries";
+import { getFormOptions } from "@/lib/experts/queries";
+import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp, plural, todayInSaoPaulo } from "@/lib/format";
 import { ACTIVITY_TYPE_LABELS, PLATFORM_LABELS } from "@/lib/labels";
 import { addActivity, deleteExpert } from "../actions";
 import { ScoreBadge, TagBadge } from "../_components/badges";
 import { ActivityForm } from "./activity-form";
 import { CadenceCard } from "./cadence-card";
+import { MeetingsCard } from "./meetings-card";
 import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { StageMoveControl } from "../../pipeline/_components/stage-move-control";
 
@@ -48,13 +51,15 @@ export default function ExpertPage({ params }: PageProps<"/experts/[id]">) {
 
 async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "params">) {
   const { id } = await params;
-  const [expert, timeline, user, stageOptions, cadence, cadenceOptions] = await Promise.all([
+  const [expert, timeline, user, stageOptions, cadence, cadenceOptions, meetings, formOptions] = await Promise.all([
     getExpert(id),
     getTimeline(id),
     getCurrentUser(),
     getStageOptions(),
     getExpertCadence(id),
     getActiveCadenceOptions(),
+    getExpertMeetings(id),
+    getFormOptions(),
   ]);
   if (!expert) notFound();
 
@@ -117,6 +122,13 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="flex flex-col gap-6">
           <CadenceCard expertId={expert.id} cadence={cadence} options={cadenceOptions} />
+          <MeetingsCard
+            expertId={expert.id}
+            meetings={meetings}
+            users={formOptions.users}
+            currentUserId={user.id}
+            today={todayInSaoPaulo()}
+          />
           <ExpertInfo expert={expert} />
         </div>
         <Card>
