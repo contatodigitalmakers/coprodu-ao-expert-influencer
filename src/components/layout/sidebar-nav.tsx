@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarIcon, FileTextIcon, ListChecksIcon, ListOrderedIcon, MessageSquareTextIcon, SettingsIcon, SquareKanbanIcon, UsersIcon } from "lucide-react";
+import { CalendarIcon, ChartColumnIcon, FileTextIcon, ListChecksIcon, ListOrderedIcon, MessageSquareTextIcon, SettingsIcon, SquareKanbanIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { href: "/propostas", segment: "propostas", label: "Propostas", icon: FileTextIcon },
   { href: "/cadencias", segment: "cadencias", label: "Cadências", icon: ListOrderedIcon },
   { href: "/templates", segment: "templates", label: "Templates", icon: MessageSquareTextIcon },
+  { href: "/dashboard", segment: "dashboard", label: "Dashboard", icon: ChartColumnIcon },
   { href: "/configuracoes", segment: "configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 

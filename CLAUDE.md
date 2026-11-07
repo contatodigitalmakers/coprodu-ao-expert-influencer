@@ -174,6 +174,30 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-07 — Dashboard (Etapa 11):**
+  - Página `/dashboard`; as consultas ficam em `src/lib/dashboard/queries.ts`.
+  - **Filtros**, numa linha acima de tudo e valendo para todos os números:
+    - período: 7, 30 ou 90 dias, ou mês atual, em dias inteiros de São Paulo;
+    - SDR: o responsável pelo lead; nos toques e tarefas, quem executou;
+    - nicho;
+    - cadência: leads que já foram inscritos nela.
+  - **Funil:** dos leads criados no período, quantos chegaram a cada etapa (a
+    etapa mais adiantada já alcançada, pelo histórico de `stage_change`; Perdido
+    fica de fora), com a conversão em relação à etapa anterior.
+  - **Motivos de perda:** leads que foram para Perdido no período.
+  - **Toques:** atividades de contato.
+  - **Taxa de resposta:** respondeu ÷ (enviado + respondeu + sem resposta) das
+    tarefas concluídas no período.
+  - **Resultado:** projetos criados no período (contratos ganhos), soma do
+    setup das propostas deles e o plano mais vendido.
+  - **Gráficos em HTML/CSS** (em vez do Recharts sugerido), seguindo o guia de
+    dataviz:
+    - uma cor só (`--viz-series-1`, validada), porque a escala de 9 tons do funil
+      reprovou na validação;
+    - barras de 16px com a ponta arredondada;
+    - dica no hover e no foco;
+    - "Ver dados em tabela" em cada gráfico;
+    - o valor de setup fechado como número de destaque.
 - **2026-11-06 — Propostas (Etapa 10):**
   - A lógica fica em `src/lib/proposals/`.
   - **Valores:** setup, divisão e extras são copiados do plano para a proposta.
@@ -286,5 +310,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 8. Fila do dia (concluída em 2026-11-06)
 - [x] 9. Agenda e diagnóstico (concluída em 2026-11-06)
 - [x] 10. Propostas (concluída em 2026-11-06)
-- [ ] 11. Dashboard
+- [x] 11. Dashboard (concluída em 2026-11-07)
 - [ ] 12. Revisão de permissões (RLS), segurança e deploy
