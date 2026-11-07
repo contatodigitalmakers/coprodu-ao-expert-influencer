@@ -174,6 +174,24 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-06 — Fila do dia (Etapa 8):**
+  - A tela inicial ("/") é a fila do dia: tarefas pendentes de hoje e
+    atrasadas do usuário, agrupadas por canal (`src/lib/queue/queries.ts`).
+  - Na mensagem, `{nome}` e `{nome_sdr}` usam o primeiro nome.
+  - **Links diretos:**
+    - DM e interação abrem o perfil;
+    - WhatsApp abre wa.me com o texto;
+    - e-mail abre mailto com assunto e corpo;
+    - ligação abre tel:.
+  - **Toques do dia:** atividades de contato (interaction, dm, whatsapp, email,
+    call) do usuário desde 0h em São Paulo, registradas pela fila ou pela ficha.
+  - **Meta diária:** `users.daily_goal`; vazio = 40. Editável em Configurações,
+    o que exigiu a política `users_update_admin` com a função `is_admin()`
+    (migrations 0008 e 0009).
+  - **Fila de reativação:** perdidos com o motivo `no_reply` há mais de
+    `reactivation_days`, do usuário ou sem responsável. "Reativar" volta o lead
+    para "Novo lead".
+  - O Admin vê um aviso com a quantidade de leads sem responsável.
 - **2026-11-06 — Cadências (Etapa 7):**
   - A lógica fica em `src/lib/cadences/mutations.ts` (`enrollExpert`,
     `completeTask`, `skipTask`).
@@ -230,7 +248,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 5. Pipeline (concluída em 2026-11-06)
 - [x] 6. Templates (concluída em 2026-11-06)
 - [x] 7. Cadências (concluída em 2026-11-06)
-- [ ] 8. Fila do dia
+- [x] 8. Fila do dia (concluída em 2026-11-06)
 - [ ] 9. Agenda e diagnóstico
 - [ ] 10. Propostas
 - [ ] 11. Dashboard

@@ -3,7 +3,7 @@
 import { eq } from "drizzle-orm";
 import { refresh } from "next/cache";
 import { z } from "zod";
-import { settings, stages } from "@/db/schema";
+import { settings, stages, users } from "@/db/schema";
 import type { ScoreWeights } from "@/db/schema/catalog";
 import { queryAsUser, requireAdmin } from "@/lib/auth";
 import { SCORE_CRITERIA } from "@/lib/score";
@@ -94,4 +94,29 @@ export async function saveStages(rows: z.input<typeof stagesSchema>): Promise<Se
   }
   refresh();
   return { message: "Etapas salvas.", savedAt: Date.now() };
+}
+
+const goalsSchema = z.array(
+  z.object({
+    id: z.uuid(),
+    dailyGoal: z
+      .string()
+      .trim()
+      .transform((value) => (value ? Number(value) : null))
+      .refine((value) => value === null || (Number.isInteger(value) && value >= 1 && value <= 500), "A meta deve ser de 1 a 500 toques."),
+  }),
+);
+
+// Meta diária de toques por usuário (seção 3.5). Vazio = padrão (40).
+export async function saveDailyGoals(rows: z.input<typeof goalsSchema>): Promise<SettingsFormState> {
+  await requireAdmin();
+  const parsed = goalsSchema.safeParse(rows);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+  await queryAsUser(async (tx) => {
+    for (const row of parsed.data) {
+      await tx.update(users).set({ dailyGoal: row.dailyGoal }).where(eq(users.id, row.id));
+    }
+  });
+  refresh();
+  return { message: "Metas salvas.", savedAt: Date.now() };
 }

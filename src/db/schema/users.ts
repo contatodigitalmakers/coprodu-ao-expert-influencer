@@ -20,12 +20,18 @@ export const users = pgTable(
     ...timestamps,
   },
   () => [
-    // Qualquer usuário logado lê. Inserção só pelo trigger; alteração e
-    // exclusão ainda não liberadas.
+    // Qualquer usuário logado lê. Inserção só pelo trigger; alteração só pelo
+    // Admin (função is_admin, migration 0008); exclusão não liberada.
     pgPolicy("users_select_authenticated", {
       for: "select",
       to: authenticatedRole,
       using: sql`true`,
+    }),
+    pgPolicy("users_update_admin", {
+      for: "update",
+      to: authenticatedRole,
+      using: sql`(select public.is_admin())`,
+      withCheck: sql`(select public.is_admin())`,
     }),
   ],
 );

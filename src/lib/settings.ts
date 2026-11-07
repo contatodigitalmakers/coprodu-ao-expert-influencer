@@ -1,6 +1,6 @@
-import { asc, isNull, sql } from "drizzle-orm";
+import { asc, eq, isNull, sql } from "drizzle-orm";
 import type { Tx } from "@/db";
-import { experts, settings, stages } from "@/db/schema";
+import { experts, settings, stages, users } from "@/db/schema";
 import type { ScoreWeights } from "@/db/schema/catalog";
 import { computeScore } from "./score";
 
@@ -61,3 +61,12 @@ export async function getStagesWithCounts(tx: Tx) {
 }
 
 export type StageWithCount = Awaited<ReturnType<typeof getStagesWithCounts>>[number];
+
+// Usuários ativos com a meta diária de toques (null = padrão).
+export async function getUsersWithGoals(tx: Tx) {
+  return tx
+    .select({ id: users.id, name: users.name, dailyGoal: users.dailyGoal })
+    .from(users)
+    .where(eq(users.active, true))
+    .orderBy(asc(users.name));
+}

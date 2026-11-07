@@ -1,0 +1,1 @@
+CREATE POLICY "users_update_admin" ON "users" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ((select public.is_admin())) WITH CHECK ((select public.is_admin()));

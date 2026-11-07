@@ -1,14 +1,14 @@
 "use client";
 
-import { HouseIcon, ListOrderedIcon, MessageSquareTextIcon, SettingsIcon, SquareKanbanIcon, UsersIcon } from "lucide-react";
+import { ListChecksIcon, ListOrderedIcon, MessageSquareTextIcon, SettingsIcon, SquareKanbanIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-// Itens do menu lateral. "segment" é a primeira parte da URL (null = Início).
+// Itens do menu lateral. "segment" é a primeira parte da URL (null = Fila do dia).
 // Novos módulos entram aqui conforme forem construídos.
 const NAV_ITEMS = [
-  { href: "/", segment: null, label: "Início", icon: HouseIcon },
+  { href: "/", segment: null, label: "Fila do dia", icon: ListChecksIcon },
   { href: "/experts", segment: "experts", label: "Experts", icon: UsersIcon },
   { href: "/pipeline", segment: "pipeline", label: "Pipeline", icon: SquareKanbanIcon },
   { href: "/cadencias", segment: "cadencias", label: "Cadências", icon: ListOrderedIcon },

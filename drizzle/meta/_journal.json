@@ -57,6 +57,20 @@
       "when": 1794012929273,
       "tag": "0007_seed_default_cadence",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1794013540563,
+      "tag": "0008_is_admin_function",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1794013541339,
+      "tag": "0009_users_update_admin",
+      "breakpoints": true
     }
   ]
 }
