@@ -23,12 +23,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/auth";
 import { profileLink, whatsappLink } from "@/lib/experts/links";
 import { getExpert, getTimeline, type ExpertDetail, type TimelineItem } from "@/lib/experts/queries";
-import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp } from "@/lib/format";
+import { daysSince, getStageOptions } from "@/lib/pipeline/queries";
+import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp, plural } from "@/lib/format";
 import { ACTIVITY_TYPE_LABELS, PLATFORM_LABELS } from "@/lib/labels";
 import { addActivity, deleteExpert } from "../actions";
 import { ScoreBadge, TagBadge } from "../_components/badges";
 import { ActivityForm } from "./activity-form";
 import { DeleteExpertButton } from "./delete-expert-button";
+import { StageMoveControl } from "../../pipeline/_components/stage-move-control";
 
 export const metadata: Metadata = {
   title: "Ficha do expert",
@@ -44,7 +46,12 @@ export default function ExpertPage({ params }: PageProps<"/experts/[id]">) {
 
 async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "params">) {
   const { id } = await params;
-  const [expert, timeline, user] = await Promise.all([getExpert(id), getTimeline(id), getCurrentUser()]);
+  const [expert, timeline, user, stageOptions] = await Promise.all([
+    getExpert(id),
+    getTimeline(id),
+    getCurrentUser(),
+    getStageOptions(),
+  ]);
   if (!expert) notFound();
 
   const profileUrl = profileLink(expert.platform, expert.handle, expert.profileUrl);
@@ -82,6 +89,7 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <Badge variant="secondary">{expert.stageName}</Badge>
+        <span className="text-muted-foreground">há {plural(daysSince(expert.stageEnteredAt), "dia", "dias")}</span>
         <ScoreBadge score={expert.score} tier={expert.scoreTier} />
         <span className="text-muted-foreground">
           Responsável: {expert.ownerName ?? "não atribuído"}
@@ -90,6 +98,13 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
           <TagBadge key={tag.id} tag={tag} />
         ))}
       </div>
+
+      <StageMoveControl
+        expert={{ id: expert.id, name: expert.name }}
+        currentStageId={expert.stageId}
+        stages={stageOptions.stages}
+        lossReasons={stageOptions.lossReasons}
+      />
 
       <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
         <div className="flex flex-col gap-6">

@@ -13,6 +13,28 @@ const dateTime = new Intl.DateTimeFormat("pt-BR", {
 
 const percent = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2 });
 
+const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+
+// 7000 → "R$ 7.000,00"
+export function formatCurrency(value: number) {
+  return currency.format(value);
+}
+
+// "2026-11-06" → "06/11/2026" (datas sem horário, como due_date)
+export function formatDate(value: string) {
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+// Hoje no fuso de São Paulo, no formato "2026-11-06".
+export function todayInSaoPaulo(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TIME_ZONE }).format(now);
+}
+
+export function plural(count: number, singular: string, pluralForm: string) {
+  return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+
 // 12500 → "12,5 mil"
 export function formatFollowers(value: number | null) {
   return value === null ? "—" : compactNumber.format(value);

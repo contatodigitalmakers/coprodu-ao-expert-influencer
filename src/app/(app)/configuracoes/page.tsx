@@ -3,9 +3,10 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/page-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser, queryAsUser } from "@/lib/auth";
-import { getSettings } from "@/lib/settings";
-import { saveScoreWeights } from "./actions";
+import { getSettings, getStagesWithCounts } from "@/lib/settings";
+import { saveScoreWeights, saveStages } from "./actions";
 import { ScoreWeightsForm } from "./_components/score-weights-form";
+import { StagesForm } from "./_components/stages-form";
 
 export const metadata: Metadata = {
   title: "Configurações",
@@ -27,11 +28,12 @@ async function SettingsSections() {
   if (user.role !== "admin") {
     return <p className="text-sm text-muted-foreground">Acesso restrito ao Admin.</p>;
   }
-  const settings = await queryAsUser(getSettings);
+  const [settings, stages] = await Promise.all([queryAsUser(getSettings), queryAsUser(getStagesWithCounts)]);
 
   return (
     <div className="flex flex-col gap-6">
       <ScoreWeightsForm weights={settings.scoreWeights} action={saveScoreWeights} />
+      <StagesForm stages={stages} action={saveStages} />
     </div>
   );
 }

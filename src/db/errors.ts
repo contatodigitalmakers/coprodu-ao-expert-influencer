@@ -1,5 +1,10 @@
 // O Drizzle embrulha o erro do Postgres em `cause`.
-type PostgresError = { code?: string; constraint_name?: string };
+type PostgresError = { code?: string; constraint_name?: string; hint?: string };
+
+// HINT de um RAISE EXCEPTION dos nossos gatilhos (ex.: "loss_reason_required").
+export function databaseHint(error: unknown) {
+  return postgresError(error)?.hint;
+}
 
 function postgresError(error: unknown): PostgresError | undefined {
   if (error && typeof error === "object") {

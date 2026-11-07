@@ -102,6 +102,11 @@ export const activities = pgTable(
     description: text("description"),
     metadata: jsonb("metadata").$type<Record<string, unknown>>().notNull().default({}),
     ...timestamps,
+    // Horário real de cada registro (now() se repete dentro da mesma transação,
+    // o que embaralharia a ordem da linha do tempo).
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .default(sql`clock_timestamp()`),
   },
   (t) => [
     index("activities_expert_id_created_at_idx").on(t.expertId, t.createdAt),

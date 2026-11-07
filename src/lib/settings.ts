@@ -1,6 +1,6 @@
-import { isNull, sql } from "drizzle-orm";
+import { asc, isNull, sql } from "drizzle-orm";
 import type { Tx } from "@/db";
-import { experts, settings } from "@/db/schema";
+import { experts, settings, stages } from "@/db/schema";
 import type { ScoreWeights } from "@/db/schema/catalog";
 import { computeScore } from "./score";
 
@@ -43,3 +43,21 @@ export async function recalculateAllScores(tx: Tx, weights: ScoreWeights) {
   }
   return rows.length;
 }
+
+// Etapas com a quantidade de leads (não excluídos) em cada uma.
+export async function getStagesWithCounts(tx: Tx) {
+  return tx
+    .select({
+      id: stages.id,
+      key: stages.key,
+      name: stages.name,
+      maxDays: stages.maxDays,
+      isWon: stages.isWon,
+      isLost: stages.isLost,
+      leadCount: sql<number>`(select count(*)::int from ${experts} e where e.stage_id = ${stages.id} and e.deleted_at is null)`,
+    })
+    .from(stages)
+    .orderBy(asc(stages.order));
+}
+
+export type StageWithCount = Awaited<ReturnType<typeof getStagesWithCounts>>[number];

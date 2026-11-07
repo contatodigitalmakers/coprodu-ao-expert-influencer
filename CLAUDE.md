@@ -102,6 +102,9 @@ etapa. Siga a ordem de implementação da seção 8.
     elementos visíveis (`.filter({ visible: true })`) e espere `networkidle` ao
     abrir uma página (o helper `open()` já faz isso).
   - Não apague `.next`: o servidor de desenvolvimento do usuário usa `.next/dev`.
+- **Depois de uma ação que grava**, espere a resposta do POST
+  (`page.waitForResponse`) antes de recarregar a página. O
+  `waitForLoadState("networkidle")` volta na hora se a página já estava ociosa.
 - **`tmp/`** é local (ignorado pelo Git), para credenciais, prints e logs.
 
 ## Regras de desenvolvimento
@@ -167,6 +170,25 @@ etapa. Siga a ordem de implementação da seção 8.
   - Os pesos precisam somar 100.
   - O score é calculado ao salvar ou importar e recalculado em todos os leads
     quando os pesos mudam (`/configuracoes`, só Admin).
+- **2026-11-06 — Pipeline (Etapa 5):**
+  - **Regras de etapa em gatilhos do banco** (migration 0005):
+    - Perdido exige motivo; ao sair de Perdido, o motivo é apagado.
+    - Ganho exige proposta aceita e um Projeto criado na mesma transação
+      (checagem DEFERRABLE).
+    - Toda mudança de etapa gera um registro em `activities` com `auth.uid()`;
+      sair de Perdido é registrado como "Lead reativado".
+    - `stage_entered_at` é atualizado sozinho.
+  - **A função `moveExpert`** (`src/lib/pipeline/move.ts`) valida antes, para dar
+    mensagens claras, e cria o Projeto no Ganho.
+  - **Identificadores fixos:** `stages.key` (new, in_cadence, replied, qualified,
+    meeting_scheduled, meeting_done, proposal_sent, negotiation, won, lost) e
+    `loss_reasons.key` (no_reply, other). As automações acham a etapa pela key;
+    o nome é livre.
+  - **Motivo "Outro"** exige descrição (`loss_note`).
+  - **`activities.created_at`** usa `clock_timestamp()`, para a ordem ficar
+    certa dentro de uma mesma transação.
+  - **Edição de etapas** em `/configuracoes`: nome, limite de dias, ordem,
+    adicionar e remover. Não dá para remover etapas do sistema nem etapas com leads.
 
 ## Progresso (seção 8)
 
@@ -174,7 +196,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 2. Banco: tabelas, migrations e seed (concluída em 2026-11-06)
 - [x] 3. Experts (concluída em 2026-11-06)
 - [x] 4. Score (concluída em 2026-11-06)
-- [ ] 5. Pipeline
+- [x] 5. Pipeline (concluída em 2026-11-06)
 - [ ] 6. Templates
 - [ ] 7. Cadências
 - [ ] 8. Fila do dia

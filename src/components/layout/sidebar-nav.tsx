@@ -1,6 +1,6 @@
 "use client";
 
-import { HouseIcon, SettingsIcon, UsersIcon } from "lucide-react";
+import { HouseIcon, SettingsIcon, SquareKanbanIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/", segment: null, label: "Início", icon: HouseIcon },
   { href: "/experts", segment: "experts", label: "Experts", icon: UsersIcon },
+  { href: "/pipeline", segment: "pipeline", label: "Pipeline", icon: SquareKanbanIcon },
   { href: "/configuracoes", segment: "configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 

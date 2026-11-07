@@ -27,6 +27,10 @@ async function main() {
       await tx`delete from public.tags where name = any(${TEST_TAGS})`;
       await tx`delete from public.niches n where name = any(${TEST_NICHES})
                and not exists (select 1 from public.experts e where e.niche_id = n.id)`;
+      // Etapas: desfaz renomeações/limites de teste e remove etapas de teste.
+      await tx`update public.stages set name = 'Qualificado', max_days = 3 where key = 'qualified'`;
+      await tx`delete from public.stages s where s.key is null and s.name like '%E2E%'
+               and not exists (select 1 from public.experts e where e.stage_id = s.id)`;
       console.log(`Limpeza: ${ids.length} lead(s) de teste apagado(s).`);
     });
   } finally {

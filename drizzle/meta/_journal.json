@@ -29,6 +29,27 @@
       "when": 1794006933939,
       "tag": "0003_seed_defaults",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794011053232,
+      "tag": "0004_stage_keys",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794011054303,
+      "tag": "0005_stage_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794011440608,
+      "tag": "0006_activities_clock_timestamp",
+      "breakpoints": true
     }
   ]
 }

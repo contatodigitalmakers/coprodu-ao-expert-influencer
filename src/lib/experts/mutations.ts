@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { Tx } from "@/db";
 import { expertTags, niches, stages, tags } from "@/db/schema";
 import { normalizeForCompare } from "./normalize";
@@ -6,16 +6,20 @@ import { normalizeForCompare } from "./normalize";
 // Funções de gravação usadas pelas Server Actions de experts.
 // Sempre recebem a transação aberta por queryAsUser().
 
-// Etapa inicial do pipeline ("Novo lead"): a primeira na ordem que não é Ganho/Perdido.
-export async function getInitialStage(tx: Tx) {
+// Etapa pelo identificador fixo (ver stages.key), ex.: "replied".
+export async function getStageByKey(tx: Tx, key: string) {
   const [stage] = await tx
-    .select({ id: stages.id, name: stages.name })
+    .select({ id: stages.id, name: stages.name, order: stages.order })
     .from(stages)
-    .where(and(eq(stages.isWon, false), eq(stages.isLost, false)))
-    .orderBy(asc(stages.order))
+    .where(eq(stages.key, key))
     .limit(1);
-  if (!stage) throw new Error("Nenhuma etapa cadastrada no pipeline.");
+  if (!stage) throw new Error(`Etapa "${key}" não encontrada no pipeline.`);
   return stage;
+}
+
+// Etapa inicial do pipeline ("Novo lead").
+export async function getInitialStage(tx: Tx) {
+  return getStageByKey(tx, "new");
 }
 
 // Mapa nome normalizado → id. Compara sem diferenciar maiúsculas e acentos,

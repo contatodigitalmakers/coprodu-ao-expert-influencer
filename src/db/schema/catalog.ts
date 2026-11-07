@@ -42,6 +42,9 @@ export const stages = pgTable(
   "stages",
   {
     id: id(),
+    // Identificador fixo das etapas usadas por automações (ex.: "replied").
+    // null = etapa criada pelo Admin. O nome pode mudar à vontade.
+    key: text("key").unique(),
     name: text("name").notNull(),
     order: integer("order").notNull(),
     // Limite de dias parado na etapa antes do alerta; null = sem limite.
@@ -61,6 +64,8 @@ export const lossReasons = pgTable(
   "loss_reasons",
   {
     id: id(),
+    // Identificador fixo dos motivos usados pelo sistema ("no_reply", "other").
+    key: text("key").unique(),
     name: text("name").notNull().unique(),
     ...timestamps,
   },

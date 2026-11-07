@@ -17,9 +17,13 @@ export function createRunner(suite: string) {
   const pageErrors: string[] = [];
   mkdirSync("tmp/e2e/screens", { recursive: true });
 
-  async function start() {
+  async function start(options: { viewport?: { width: number; height: number } } = {}) {
     const browser = await chromium.launch({ channel: "chrome", headless: true });
-    const context = await browser.newContext({ locale: "pt-BR", timezoneId: "America/Sao_Paulo" });
+    const context = await browser.newContext({
+      locale: "pt-BR",
+      timezoneId: "America/Sao_Paulo",
+      viewport: options.viewport ?? { width: 1280, height: 800 },
+    });
     context.setDefaultTimeout(15_000);
     const page = await context.newPage();
     page.on("pageerror", (error) => pageErrors.push(`${page.url()}: ${error.message}`));
