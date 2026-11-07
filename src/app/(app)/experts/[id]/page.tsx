@@ -29,7 +29,7 @@ import { ACTIVITY_TYPE_LABELS, PLATFORM_LABELS } from "@/lib/labels";
 import { addActivity, deleteExpert } from "../actions";
 import { ScoreBadge, TagBadge } from "../_components/badges";
 import { ActivityForm } from "./activity-form";
-import { DeleteExpertButton } from "./delete-expert-button";
+import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { StageMoveControl } from "../../pipeline/_components/stage-move-control";
 
 export const metadata: Metadata = {
@@ -81,7 +81,11 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
               Editar
             </Link>
             {user.role === "admin" && (
-              <DeleteExpertButton name={expert.name} action={deleteExpert.bind(null, expert.id)} />
+              <ConfirmDeleteButton
+                title={`Excluir ${expert.name}?`}
+                description="O lead sai da lista e do pipeline. O histórico continua guardado e o @ fica livre para um novo cadastro."
+                action={deleteExpert.bind(null, expert.id)}
+              />
             )}
           </>
         }

@@ -89,7 +89,11 @@ etapa. Siga a ordem de implementação da seção 8.
   dentro de uma transação desfeita no final.
   Rodar: `npx tsx --env-file=.env.local tests/db/etapaN.ts`.
 - **`tests/e2e/etapaN.ts`:** testes de tela com Playwright (`playwright-core`
-  usando o Chrome do Mac), contra o `npm run dev` na porta 3000.
+  usando o Chrome do Mac). Rode contra um build de produção, que é mais confiável
+  que o servidor de desenvolvimento (este às vezes fica com módulos antigos em
+  cache): `npm run build`, depois `npx next start -p 3200`, e
+  `BASE_URL=http://localhost:3200` nos comandos abaixo. Sem `BASE_URL`, o padrão
+  é o `npm run dev` na porta 3000.
   1. `npx tsx --env-file=.env.local tests/e2e/test-user.ts create`: cria um
      login de teste (admin) direto no Supabase. A senha fica em
      `tmp/e2e/test-user.json`. Use `delete` para apagar.
@@ -163,6 +167,13 @@ etapa. Siga a ordem de implementação da seção 8.
     (padrão: Negociação) e `reactivation_days` (60).
   - Valores em reais com centavos. Soft delete também em `templates`.
   - Status de reunião: agendada, realizada, cancelada e não compareceu.
+- **2026-11-06 — Templates (Etapa 6):**
+  - Biblioteca em `/templates`, com filtro por canal e agrupada por categoria.
+  - Variáveis renderizadas em `src/lib/templates/render.ts`. Dado faltando vira
+    vazio e entra em `missing`, para a tela avisar.
+  - Variável desconhecida bloqueia o salvamento.
+  - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
+  - Exclusão lógica.
 - **2026-11-06 — Score (Etapa 4):**
   - Cálculo em `src/lib/score.ts`: a nota é a soma dos pesos dos critérios atendidos.
   - Sim/não: "sim" ganha o peso cheio; "não" ou não informado ganha 0.
@@ -197,7 +208,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 3. Experts (concluída em 2026-11-06)
 - [x] 4. Score (concluída em 2026-11-06)
 - [x] 5. Pipeline (concluída em 2026-11-06)
-- [ ] 6. Templates
+- [x] 6. Templates (concluída em 2026-11-06)
 - [ ] 7. Cadências
 - [ ] 8. Fila do dia
 - [ ] 9. Agenda e diagnóstico

@@ -14,17 +14,23 @@ import {
 } from "@/components/ui/alert-dialog";
 import { buttonVariants } from "@/components/ui/button";
 
-export function DeleteExpertButton({ name, action }: { name: string; action: () => Promise<void> }) {
+// Botão "Excluir" com confirmação; envia a Server Action ao confirmar.
+export function ConfirmDeleteButton({
+  title,
+  description,
+  action,
+}: {
+  title: string;
+  description: string;
+  action: () => Promise<void>;
+}) {
   return (
     <AlertDialog>
       <AlertDialogTrigger className={buttonVariants({ variant: "outline" })}>Excluir</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Excluir {name}?</AlertDialogTitle>
-          <AlertDialogDescription>
-            O lead sai da lista e do pipeline. O histórico continua guardado e o @ fica livre para um
-            novo cadastro.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>

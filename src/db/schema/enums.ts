@@ -62,3 +62,5 @@ export const projectStatus = pgEnum("project_status", ["awaiting_kickoff"]);
 export type Platform = (typeof platform.enumValues)[number];
 export type ScoreTier = (typeof scoreTier.enumValues)[number];
 export type ActivityType = (typeof activityType.enumValues)[number];
+export type Channel = (typeof channel.enumValues)[number];
+export type TemplateStage = (typeof templateStage.enumValues)[number];
