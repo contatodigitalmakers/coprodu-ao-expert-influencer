@@ -1,4 +1,4 @@
-import type { ActivityType, Channel, Platform, TemplateStage } from "@/db/schema/enums";
+import type { ActivityType, Channel, EnrollmentStatus, Platform, TaskOutcome, TemplateStage } from "@/db/schema/enums";
 
 // Textos em português dos valores fixos do banco (enums).
 
@@ -53,3 +53,17 @@ export const TEMPLATE_STAGE_OPTIONS = Object.entries(TEMPLATE_STAGE_LABELS).map(
   value,
   label,
 }));
+
+// Resultado de cada passo da cadência (seção 3.4).
+export const TASK_OUTCOME_LABELS: Record<TaskOutcome, string> = {
+  sent: "Enviado",
+  replied: "Respondeu",
+  no_response: "Sem resposta",
+  invalid_number: "Número inválido",
+};
+
+export const ENROLLMENT_STATUS_LABELS: Record<EnrollmentStatus, string> = {
+  active: "Ativa",
+  paused: "Pausada (lead respondeu)",
+  finished: "Encerrada",
+};

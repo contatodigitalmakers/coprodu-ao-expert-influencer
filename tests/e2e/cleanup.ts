@@ -27,6 +27,10 @@ async function main() {
       await tx`delete from public.tags where name = any(${TEST_TAGS})`;
       await tx`delete from public.niches n where name = any(${TEST_NICHES})
                and not exists (select 1 from public.experts e where e.niche_id = n.id)`;
+      // Cadências de teste (inscrições e tarefas delas).
+      await tx`delete from public.tasks where enrollment_id in (select en.id from public.cadence_enrollments en join public.cadences c on c.id = en.cadence_id where c.name like '%E2E%')`;
+      await tx`delete from public.cadence_enrollments where cadence_id in (select id from public.cadences where name like '%E2E%')`;
+      await tx`delete from public.cadences where name like '%E2E%'`;
       // Templates de teste (e passos de cadência que os usam).
       await tx`delete from public.cadence_steps where template_id in (select id from public.templates where name like '%E2E%')`;
       await tx`delete from public.templates where name like '%E2E%'`;

@@ -64,3 +64,5 @@ export type ScoreTier = (typeof scoreTier.enumValues)[number];
 export type ActivityType = (typeof activityType.enumValues)[number];
 export type Channel = (typeof channel.enumValues)[number];
 export type TemplateStage = (typeof templateStage.enumValues)[number];
+export type TaskOutcome = (typeof taskOutcome.enumValues)[number];
+export type EnrollmentStatus = (typeof enrollmentStatus.enumValues)[number];

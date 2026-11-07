@@ -174,6 +174,26 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-06 — Cadências (Etapa 7):**
+  - A lógica fica em `src/lib/cadences/mutations.ts` (`enrollExpert`,
+    `completeTask`, `skipTask`).
+  - **Inscrição:**
+    - gera uma tarefa por passo (data = hoje em São Paulo + dia do passo);
+    - a tarefa vai para o responsável do lead ou, sem responsável, para quem
+      inscreveu;
+    - "Novo lead" ou um lead perdido vai para "Em cadência".
+  - **Resultados:**
+    - "respondeu" pausa a cadência, pula as tarefas pendentes e move o lead para
+      "Respondeu";
+    - o fim sem resposta leva o lead a Perdido com o motivo "Sem resposta", e ele
+      volta na fila de reativação depois de `settings.reactivation_days`.
+  - **Contadores do template:** "usado" conta enviado, respondeu e sem resposta;
+    "resposta" conta só respondeu.
+  - **Pipeline:** ir para Respondeu ou além pausa a cadência; Ganho ou Perdido a
+    encerram (`closeActiveEnrollment`).
+  - Pausar pula as tarefas restantes, sem opção de retomar: o lead pode ser
+    inscrito de novo.
+  - A cadência padrão de 12 dias é criada pela migration 0007.
 - **2026-11-06 — Score (Etapa 4):**
   - Cálculo em `src/lib/score.ts`: a nota é a soma dos pesos dos critérios atendidos.
   - Sim/não: "sim" ganha o peso cheio; "não" ou não informado ganha 0.
@@ -209,7 +229,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 4. Score (concluída em 2026-11-06)
 - [x] 5. Pipeline (concluída em 2026-11-06)
 - [x] 6. Templates (concluída em 2026-11-06)
-- [ ] 7. Cadências
+- [x] 7. Cadências (concluída em 2026-11-06)
 - [ ] 8. Fila do dia
 - [ ] 9. Agenda e diagnóstico
 - [ ] 10. Propostas

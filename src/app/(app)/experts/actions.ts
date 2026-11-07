@@ -8,11 +8,14 @@ import { isUniqueViolation } from "@/db/errors";
 import { activities, experts } from "@/db/schema";
 import { platform } from "@/db/schema/enums";
 import { getCurrentUser, queryAsUser } from "@/lib/auth";
+import { closeActiveEnrollment } from "@/lib/cadences/enrollment-status";
+import { CadenceError, enrollExpert } from "@/lib/cadences/mutations";
 import { getInitialStage, replaceExpertTags } from "@/lib/experts/mutations";
 import { isUuid, normalizeHandle } from "@/lib/experts/normalize";
 import { findDuplicate } from "@/lib/experts/queries";
 import { expertFormSchema, firstFieldErrors } from "@/lib/experts/validation";
 import { MANUAL_ACTIVITY_TYPES } from "@/lib/labels";
+import { MoveError } from "@/lib/pipeline/move";
 import { computeScore } from "@/lib/score";
 import { getScoreWeights } from "@/lib/settings";
 
@@ -134,4 +137,30 @@ export async function checkDuplicate(handle: string, platformValue: string, excl
     parsedPlatform.data,
     isUuid(excludeId) ? excludeId : null,
   );
+}
+
+// Inscreve o lead numa cadência (gera as tarefas).
+export async function enrollInCadence(expertId: string, cadenceId: string | null): Promise<{ error?: string }> {
+  const user = await getCurrentUser();
+  if (!isUuid(expertId) || !isUuid(cadenceId)) return { error: "Escolha a cadência." };
+  try {
+    await queryAsUser((tx) => enrollExpert(tx, expertId, cadenceId, user.id));
+  } catch (error) {
+    if (error instanceof CadenceError || error instanceof MoveError) return { error: error.message };
+    throw error;
+  }
+  refresh();
+  return {};
+}
+
+// Encerra a cadência ativa do lead (as tarefas pendentes são puladas).
+export async function endCadence(expertId: string) {
+  const user = await getCurrentUser();
+  if (!isUuid(expertId)) throw new Error("Expert inválido.");
+  await queryAsUser(async (tx) => {
+    if (await closeActiveEnrollment(tx, expertId, "finished")) {
+      await tx.insert(activities).values({ expertId, userId: user.id, type: "note", description: "Cadência encerrada manualmente." });
+    }
+  });
+  refresh();
 }

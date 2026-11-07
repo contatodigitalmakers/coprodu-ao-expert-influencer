@@ -2,6 +2,8 @@ import { and, eq, isNull } from "drizzle-orm";
 import type { Tx } from "@/db";
 import { databaseHint, isUniqueViolation } from "@/db/errors";
 import { activities, experts, lossReasons, projects, proposals, stages } from "@/db/schema";
+import { closeActiveEnrollment } from "@/lib/cadences/enrollment-status";
+import { getStageByKey } from "@/lib/experts/mutations";
 
 // Mudança de etapa de um lead. As regras principais também estão no banco
 // (gatilhos da migration 0005): aqui validamos antes para dar mensagens claras.
@@ -67,6 +69,13 @@ export async function moveExpert(tx: Tx, input: MoveInput, userId: string | null
     .update(experts)
     .set({ stageId: target.id, lossReasonId, lossNote })
     .where(eq(experts.id, expert.id));
+
+  // Cadência: Ganho/Perdido encerram; Respondeu ou além pausam (seção 3.4).
+  if (target.isWon || target.isLost) {
+    await closeActiveEnrollment(tx, expert.id, "finished");
+  } else if (target.order >= (await getStageByKey(tx, "replied")).order) {
+    await closeActiveEnrollment(tx, expert.id, "paused");
+  }
 
   if (target.isWon) {
     await tx.insert(activities).values({

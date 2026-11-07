@@ -50,6 +50,13 @@
       "when": 1794011440608,
       "tag": "0006_activities_clock_timestamp",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794012929273,
+      "tag": "0007_seed_default_cadence",
+      "breakpoints": true
     }
   ]
 }
