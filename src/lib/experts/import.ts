@@ -6,6 +6,8 @@ import { IMPORT_FIELDS, type ImportRow } from "./import-fields";
 import { findOrCreateNiches, findOrCreateTags, getInitialStage } from "./mutations";
 import { normalizeForCompare, parsePlatform } from "./normalize";
 import { importRowSchema, type ImportRowData } from "./validation";
+import { computeScore } from "@/lib/score";
+import { getScoreWeights } from "@/lib/settings";
 
 // Importação de experts por CSV. A análise roda na prévia e de novo na hora
 // de importar, então nada que vem do navegador é gravado sem validação.
@@ -123,6 +125,7 @@ export async function importAnalyzedRows(
   if (!analysis.ready.length) return 0;
 
   const stage = await getInitialStage(tx);
+  const weights = await getScoreWeights(tx);
   const nicheIds = await findOrCreateNiches(
     tx,
     analysis.ready.map((row) => row.data.niche ?? ""),
@@ -143,6 +146,7 @@ export async function importAnalyzedRows(
       .values(
         chunk.map(({ data: { niche, tags: _tags, ...fields } }) => ({
           ...fields,
+          ...computeScore(fields, weights),
           nicheId: niche ? (nicheIds.get(normalizeForCompare(niche)) ?? null) : null,
           ownerId,
           stageId: stage.id,

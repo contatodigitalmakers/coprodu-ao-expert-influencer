@@ -160,13 +160,20 @@ etapa. Siga a ordem de implementação da seção 8.
     (padrão: Negociação) e `reactivation_days` (60).
   - Valores em reais com centavos. Soft delete também em `templates`.
   - Status de reunião: agendada, realizada, cancelada e não compareceu.
+- **2026-11-06 — Score (Etapa 4):**
+  - Cálculo em `src/lib/score.ts`: a nota é a soma dos pesos dos critérios atendidos.
+  - Sim/não: "sim" ganha o peso cheio; "não" ou não informado ganha 0.
+  - O engajamento vale proporcionalmente até 5% e ganha o peso cheio a partir daí.
+  - Os pesos precisam somar 100.
+  - O score é calculado ao salvar ou importar e recalculado em todos os leads
+    quando os pesos mudam (`/configuracoes`, só Admin).
 
 ## Progresso (seção 8)
 
 - [x] 1. Setup do projeto + login (concluída em 2026-11-06)
 - [x] 2. Banco: tabelas, migrations e seed (concluída em 2026-11-06)
 - [x] 3. Experts (concluída em 2026-11-06)
-- [ ] 4. Score
+- [x] 4. Score (concluída em 2026-11-06)
 - [ ] 5. Pipeline
 - [ ] 6. Templates
 - [ ] 7. Cadências

@@ -25,6 +25,13 @@ export async function queryAsUser<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {
   return runAsUser(claims, fn);
 }
 
+// Para páginas e ações restritas ao Admin.
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+  if (user.role !== "admin") throw new Error("Acesso restrito ao Admin.");
+  return user;
+}
+
 // Usuário logado, com os dados da tabela users.
 export const getCurrentUser = cache(async (): Promise<User> => {
   const claims = await getClaims();

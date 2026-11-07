@@ -13,6 +13,8 @@ import { isUuid, normalizeHandle } from "@/lib/experts/normalize";
 import { findDuplicate } from "@/lib/experts/queries";
 import { expertFormSchema, firstFieldErrors } from "@/lib/experts/validation";
 import { MANUAL_ACTIVITY_TYPES } from "@/lib/labels";
+import { computeScore } from "@/lib/score";
+import { getScoreWeights } from "@/lib/settings";
 
 export type ExpertFormState = {
   fieldErrors?: Record<string, string>;
@@ -36,11 +38,14 @@ export async function saveExpert(
   let savedId: string;
   try {
     savedId = await queryAsUser(async (tx) => {
+      // Score calculado a cada gravação (seção 3.2).
+      const values = { ...data, ...computeScore(data, await getScoreWeights(tx)) };
+
       if (expertId) {
         // A etapa não muda aqui: mudanças de etapa ficam no Pipeline.
         const [updated] = await tx
           .update(experts)
-          .set(data)
+          .set(values)
           .where(and(eq(experts.id, expertId), isNull(experts.deletedAt)))
           .returning({ id: experts.id });
         if (!updated) throw new Error("Expert não encontrado.");
@@ -51,7 +56,7 @@ export async function saveExpert(
       const stage = await getInitialStage(tx);
       const [created] = await tx
         .insert(experts)
-        .values({ ...data, stageId: stage.id })
+        .values({ ...values, stageId: stage.id })
         .returning({ id: experts.id });
       await replaceExpertTags(tx, created.id, tagNames);
       await tx.insert(activities).values({

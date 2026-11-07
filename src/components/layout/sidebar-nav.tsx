@@ -1,6 +1,6 @@
 "use client";
 
-import { HouseIcon, UsersIcon } from "lucide-react";
+import { HouseIcon, SettingsIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/", segment: null, label: "Início", icon: HouseIcon },
   { href: "/experts", segment: "experts", label: "Experts", icon: UsersIcon },
+  { href: "/configuracoes", segment: "configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 
 // Menu com o item da página atual destacado. Lê a URL, então precisa ficar
