@@ -1,20 +1,29 @@
 "use client";
 
-import { HouseIcon } from "lucide-react";
+import { HouseIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-// Itens do menu lateral. Novos módulos entram aqui conforme forem construídos.
-const NAV_ITEMS = [{ href: "/", label: "Início", icon: HouseIcon }];
+// Itens do menu lateral. "segment" é a primeira parte da URL (null = Início).
+// Novos módulos entram aqui conforme forem construídos.
+const NAV_ITEMS = [
+  { href: "/", segment: null, label: "Início", icon: HouseIcon },
+  { href: "/experts", segment: "experts", label: "Experts", icon: UsersIcon },
+];
 
+// Menu com o item da página atual destacado. Lê a URL, então precisa ficar
+// dentro de <Suspense> (o fallback é SidebarNavLinks sem destaque).
 export function SidebarNav() {
-  const pathname = usePathname();
+  const activeSegment = useSelectedLayoutSegment();
+  return <SidebarNavLinks activeSegment={activeSegment} />;
+}
 
+export function SidebarNavLinks({ activeSegment }: { activeSegment?: string | null }) {
   return (
     <nav className="flex flex-col gap-1">
-      {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-        const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+      {NAV_ITEMS.map(({ href, segment, label, icon: Icon }) => {
+        const isActive = activeSegment !== undefined && activeSegment === segment;
         return (
           <Link
             key={href}

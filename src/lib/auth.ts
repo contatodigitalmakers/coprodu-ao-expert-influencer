@@ -1,6 +1,7 @@
 import type { JwtPayload } from "@supabase/supabase-js";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { cache } from "react";
 import { runAsUser, type Tx } from "@/db";
 import { users, type User } from "@/db/schema";
@@ -9,6 +10,8 @@ import { createClient } from "@/lib/supabase/server";
 // Lê e valida o token da sessão. Sem sessão válida, manda para o login.
 // O cache() evita repetir a validação várias vezes na mesma requisição.
 const getClaims = cache(async (): Promise<JwtPayload> => {
+  // Sessão é sempre calculada na hora (a validação do token usa o relógio).
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   if (!data?.claims) redirect("/login");

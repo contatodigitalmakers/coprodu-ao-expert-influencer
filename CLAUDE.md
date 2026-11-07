@@ -60,14 +60,64 @@ etapa. Siga a ordem de implementação da seção 8.
   - `activities` só aceita leitura e inclusão;
   - divisão de receita soma 100%;
   - `settings` tem uma linha só.
-- URLs em português (`/login`), pois são vistas pelo usuário; o resto do
-  código fica em inglês.
+- URLs em português (`/login`, `/experts/novo`), pois são vistas pelo usuário;
+  o resto do código fica em inglês.
+- **Organização por módulo:**
+  - telas em `src/app/(app)/<módulo>/`, com `actions.ts` (Server Actions) e
+    `_components/`;
+  - lógica em `src/lib/<módulo>/`:
+    - `queries.ts`: leituras;
+    - `mutations.ts`: gravações que recebem a transação;
+    - `validation.ts`: schemas zod;
+    - `normalize.ts`: limpeza de dados.
+  - Textos em português dos valores fixos ficam em `src/lib/labels.ts`, e a
+    formatação de números e datas em `src/lib/format.ts`.
+- **Padrões do Next 16 com Cache Components:**
+  - `params` e `searchParams` são Promises: passe-os para um componente dentro
+    de `<Suspense>`.
+  - Hooks que leem a URL (`useSearchParams`, `useSelectedLayoutSegment`) também
+    ficam dentro de `<Suspense>`, ou o build falha.
+  - Depois de gravar sem redirecionar, chame `refresh()` (de `next/cache`).
+- **Formulários** com `useActionState` enviam via `onSubmit` + `startTransition`,
+  para não limpar os campos quando há erro de validação.
+- **Selects:** use `SimpleSelect` (`src/components/simple-select.tsx`). O Select
+  do shadcn usa o Base UI, que precisa da lista de opções para mostrar o
+  nome em vez do id.
+## Testes
+
+- **`tests/db/etapaN.ts`:** lógica e regras do banco. Testam contra o banco real
+  dentro de uma transação desfeita no final.
+  Rodar: `npx tsx --env-file=.env.local tests/db/etapaN.ts`.
+- **`tests/e2e/etapaN.ts`:** testes de tela com Playwright (`playwright-core`
+  usando o Chrome do Mac), contra o `npm run dev` na porta 3000.
+  1. `npx tsx --env-file=.env.local tests/e2e/test-user.ts create`: cria um
+     login de teste (admin) direto no Supabase. A senha fica em
+     `tmp/e2e/test-user.json`. Use `delete` para apagar.
+  2. `npx tsx --env-file=.env.local tests/e2e/etapaN.ts`: roda os testes. Os
+     prints das falhas vão para `tmp/e2e/screens/`.
+  3. `npx tsx --env-file=.env.local tests/e2e/cleanup.ts`: apaga os dados de
+     teste (leads `teste.expert*`, `*.e2e`, nomes com "E2E").
+- **Cuidados com o Cache Components:**
+  - Ele mantém a página anterior montada e escondida. Nos testes, use só
+    elementos visíveis (`.filter({ visible: true })`) e espere `networkidle` ao
+    abrir uma página (o helper `open()` já faz isso).
+  - Não apague `.next`: o servidor de desenvolvimento do usuário usa `.next/dev`.
+- **`tmp/`** é local (ignorado pelo Git), para credenciais, prints e logs.
 
 ## Regras de desenvolvimento
 
-- Trabalhar **uma etapa da seção 8 por vez**. Antes de cada etapa, apresentar o
-  plano e aguardar aprovação. Ao terminar, explicar como testar e aguardar
-  confirmação antes de seguir para a próxima.
+- Trabalhar **uma etapa da seção 8 por vez**, na ordem.
+- **Modo autônomo (pedido do usuário em 2026-11-06):** executar as etapas sem
+  perguntar e sem esperar aprovação. Para cada etapa:
+  1. planejar;
+  2. implementar;
+  3. testar por conta própria: `typecheck`, `lint`, `build`, scripts em `tmp/` e
+     testes de tela com Playwright (ver "Testes" abaixo);
+  4. registrar as decisões em "Decisões tomadas";
+  5. commitar.
+
+  Em caso de ambiguidade, escolher a opção mais simples dentro do escopo e
+  registrar a escolha.
 - Interface 100% em português do Brasil; código, tabelas e colunas em inglês.
 - Seguir o modelo de dados da seção 5. Qualquer mudança precisa ser explicada e
   aprovada antes.
@@ -115,7 +165,7 @@ etapa. Siga a ordem de implementação da seção 8.
 
 - [x] 1. Setup do projeto + login (concluída em 2026-11-06)
 - [x] 2. Banco: tabelas, migrations e seed (concluída em 2026-11-06)
-- [ ] 3. Experts
+- [x] 3. Experts (concluída em 2026-11-06)
 - [ ] 4. Score
 - [ ] 5. Pipeline
 - [ ] 6. Templates
