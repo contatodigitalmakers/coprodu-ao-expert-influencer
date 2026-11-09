@@ -211,9 +211,14 @@ etapa. Siga a ordem de implementação da seção 8.
     `npm run pesquisa-salvar -- <arquivo> [--simular] [--quantidade N]`, como o
     usuário de `PESQUISA_USER_EMAIL`.
   - Testes em `tests/db/pesquisa.ts`.
-  - **Pendente:** `.claude/settings.json` (permissões, bloqueio das redes no
-    WebFetch e ativação do hook) precisa da aprovação do usuário; a rodada
-    piloto; a rodada noturna (launchd), só depois do piloto.
+  - **`.claude/settings.json`** (aprovado pelo usuário):
+    - libera WebSearch e os dois scripts;
+    - bloqueia WebFetch em Instagram, TikTok, YouTube, Facebook e Threads;
+    - ativa o hook.
+
+    Testado: uma busca real foi registrada, e os 10 perfis da resposta valeram
+    como prova.
+  - **Pendente:** a rodada piloto; a rodada noturna (launchd), só depois do piloto.
 - **2026-11-07 — Segurança e deploy (Etapa 12):**
   - **Auditoria automática** em `tests/db/etapa12.ts`:
     - RLS ligada nas 18 tabelas;

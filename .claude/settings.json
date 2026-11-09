@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(npm run pesquisa-existentes *)",
+      "Bash(npm run pesquisa-salvar *)",
+      "Edit(/tmp/pesquisa/**)"
+    ],
+    "deny": [
+      "WebFetch(domain:instagram.com)",
+      "WebFetch(domain:*.instagram.com)",
+      "WebFetch(domain:tiktok.com)",
+      "WebFetch(domain:*.tiktok.com)",
+      "WebFetch(domain:youtube.com)",
+      "WebFetch(domain:*.youtube.com)",
+      "WebFetch(domain:youtu.be)",
+      "WebFetch(domain:facebook.com)",
+      "WebFetch(domain:*.facebook.com)",
+      "WebFetch(domain:threads.net)",
+      "WebFetch(domain:*.threads.net)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$CLAUDE_PROJECT_DIR/.claude/hooks/registrar-busca.mjs\""
+          }
+        ]
+      }
+    ]
+  }
+}
