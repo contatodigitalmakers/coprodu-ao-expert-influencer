@@ -30,6 +30,8 @@ etapa. Siga a ordem de implementação da seção 8.
 - `npx drizzle-kit generate --custom --name=<nome>`: migration SQL escrita à mão
   (triggers, funções)
 - `npm run db:migrate`: aplica as migrations no Supabase (usa `DATABASE_URL_MIGRATIONS`)
+- `/pesquisa [nicho] [quantidade]` (no Claude Code): pesquisa experts e cadastra os novos
+  (ver README e `pesquisa/config.md`)
 
 ## Arquitetura
 
@@ -174,6 +176,44 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-09 — Pesquisa de experts (`/pesquisa`, extra fora do MVP, pedido do usuário):**
+  - Comando do Claude Code em `.claude/skills/pesquisa/SKILL.md` (modelo
+    sonnet). Usa só WebSearch e WebFetch, sem API paga, e **nunca abre as redes
+    sociais**: usa o que o buscador mostra e páginas públicas fora delas.
+  - **No buscador, `site:` não funciona.** O filtro por plataforma é o
+    parâmetro `allowed_domains`. O resumo do Instagram costuma ter os
+    seguidores; o do YouTube e o do TikTok, não.
+  - Configuração em `pesquisa/config.md`: nichos Nutrição, Fitness, Religião e
+    Renda extra, 10 mil a 500 mil seguidores, 10 por rodada, Instagram, YouTube
+    e TikTok, e orçamento de buscas.
+  - A gravação fica em `src/lib/research/save.ts` (`saveResearch`) e reaproveita
+    a importação de CSV. `importAnalyzedRows` ganhou um parâmetro opcional para
+    a descrição da atividade e a origem; o CSV continua igual.
+  - **Regras do `saveResearch`, nesta ordem:**
+    1. link de perfil válido;
+    2. plataforma e @ batem com o link;
+    3. sem repetir na rodada;
+    4. prova;
+    5. nicho do config (criado se faltar);
+    6. seguidores na faixa (sem número é aceito);
+    7. contato sem fonte é removido;
+    8. já no sistema, **incluindo os excluídos**: excluir um lead o tira das
+       próximas pesquisas;
+    9. limite da rodada.
+  - **Os leads entram** em "Novo lead", sem responsável, com a tag
+    `pesquisa-ia` e a origem "Pesquisa IA". As observações trazem o resumo, os
+    seguidores com a fonte, as provas e a mensagem sugerida.
+  - **Prova (anti-invenção):** o hook `.claude/hooks/registrar-busca.mjs`
+    grava cada WebSearch e WebFetch em `tmp/pesquisa/buscas.jsonl`. O perfil só
+    entra se o link apareceu na **resposta** de uma busca das últimas 24h. Sem o
+    registro, entra com aviso.
+  - **Scripts** (`scripts/pesquisa/`): `npm run pesquisa-existentes` e
+    `npm run pesquisa-salvar -- <arquivo> [--simular] [--quantidade N]`, como o
+    usuário de `PESQUISA_USER_EMAIL`.
+  - Testes em `tests/db/pesquisa.ts`.
+  - **Pendente:** `.claude/settings.json` (permissões, bloqueio das redes no
+    WebFetch e ativação do hook) precisa da aprovação do usuário; a rodada
+    piloto; a rodada noturna (launchd), só depois do piloto.
 - **2026-11-07 — Segurança e deploy (Etapa 12):**
   - **Auditoria automática** em `tests/db/etapa12.ts`:
     - RLS ligada nas 18 tabelas;
@@ -351,3 +391,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 11. Dashboard (concluída em 2026-11-07)
 - [x] 12. Revisão de permissões (RLS) e segurança (concluída em 2026-11-07).
   O deploy está pronto, mas depende do GitHub e da Vercel do usuário (ver README).
+- Extra: pesquisa de experts com `/pesquisa` (Fase 1 em 2026-11-09; piloto e
+  rodada noturna pendentes).

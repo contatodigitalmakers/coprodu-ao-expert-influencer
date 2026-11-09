@@ -64,6 +64,68 @@ marcando *Auto Confirm User*. O cadastro aberto fica desligado.
 Quando uma mudança trouxer migration nova, rode `npm run db:migrate` (com o
 `.env.local`) antes ou junto do deploy.
 
+## Pesquisa de experts (`/pesquisa`)
+
+O comando `/pesquisa`, digitado no Claude Code dentro desta pasta, procura
+experts na internet e cadastra os novos como leads. Ele usa só as ferramentas
+do Claude Code (busca na web e leitura de páginas públicas), sem API paga:
+gasta o limite da sua assinatura.
+
+**Como rodar:**
+
+- `/pesquisa`: uma rodada com todos os nichos e a quantidade do config (10).
+- `/pesquisa Nutrição 5`: só um nicho e/ou outra quantidade.
+
+**O que ele faz e o que não faz:**
+
+- Nunca abre Instagram, TikTok, YouTube, Facebook nem Threads. Sobre os perfis,
+  usa só o que o buscador mostra (título, link e resumo). Pode abrir páginas
+  públicas fora das redes, como Linktree, site e página de venda.
+- Cada lead entra em "Novo lead", **sem responsável**, com a tag `pesquisa-ia`,
+  a origem "Pesquisa IA", o score e, nas observações, o resumo do perfil, as
+  provas (links) e uma mensagem sugerida para a primeira DM.
+- Não inscreve em cadência, não atribui responsável e não manda mensagem.
+- Descarta (com o motivo, no resumo da rodada):
+  - perfil que já está no sistema;
+  - perfil que você **excluiu** antes;
+  - link que não é de perfil;
+  - nicho fora do config e seguidores fora da faixa;
+  - perfil que não apareceu numa busca registrada (ver "Prova" abaixo).
+- WhatsApp e e-mail só entram com a página onde estavam publicados.
+
+**Para rejeitar um lead, exclua-o.** Ele não volta nas próximas pesquisas.
+
+**Configuração** em [pesquisa/config.md](pesquisa/config.md): nichos e
+palavras-chave, faixa de seguidores, quantidade por rodada, plataformas e
+orçamento de buscas. Pode editar à vontade, mantendo o formato das seções
+"Parâmetros" e "Nichos". No `.env.local`, `PESQUISA_USER_EMAIL` é o login em
+nome de quem os leads são gravados.
+
+**Prova (anti-invenção):** o hook `.claude/hooks/registrar-busca.mjs` registra
+cada busca em `tmp/pesquisa/buscas.jsonl`. Um perfil só é gravado se o link dele
+apareceu na resposta de uma busca das últimas 24 horas. O hook é ativado em
+`.claude/settings.json`. Sem esse registro, os leads são gravados com um aviso
+para conferir o perfil antes de prospectar.
+
+**Por baixo, os scripts que o comando chama** (também dá para rodar à mão):
+
+```bash
+npm run pesquisa-existentes                      # config, nichos e perfis já cadastrados
+npm run pesquisa-existentes -- <link1> <link2>   # NOVO, EXISTE, EXCLUÍDO ou INVÁLIDO
+npm run pesquisa-salvar -- tmp/pesquisa/<rodada>.json --simular   # valida sem gravar
+npm run pesquisa-salvar -- tmp/pesquisa/<rodada>.json             # grava
+```
+
+**Limites conhecidos:**
+
+- Os seguidores são aproximados (vêm do resumo do buscador). No YouTube e no
+  TikTok o número quase nunca aparece e o lead entra com "seguidores não
+  confirmados".
+- Sem engajamento: não dá para medir sem abrir o perfil. Por isso o score chega
+  a no máximo 70 até alguém preencher o engajamento.
+- **LGPD:** se alguém pedir para ser removido, excluir não basta (os dados
+  continuam no banco, só escondidos). É preciso apagar ou anonimizar o cadastro.
+
 ## Testes
 
 - **Verificações:**

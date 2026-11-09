@@ -116,11 +116,13 @@ export async function analyzeImport(
 }
 
 // Grava as linhas prontas da análise. Retorna quantos leads foram criados.
+// "options" muda o registro na linha do tempo (a pesquisa IA usa o seu próprio).
 export async function importAnalyzedRows(
   tx: Tx,
   analysis: ImportAnalysis,
   ownerId: string | null,
   userId: string,
+  options: { activityDescription?: string; source?: string } = {},
 ) {
   if (!analysis.ready.length) return 0;
 
@@ -170,8 +172,8 @@ export async function importAnalyzedRows(
         expertId: expert.id,
         userId,
         type: "stage_change" as const,
-        description: `Lead importado por planilha na etapa "${stage.name}".`,
-        metadata: { fromStageId: null, toStageId: stage.id, source: "csv_import" },
+        description: options.activityDescription ?? `Lead importado por planilha na etapa "${stage.name}".`,
+        metadata: { fromStageId: null, toStageId: stage.id, source: options.source ?? "csv_import" },
       })),
     );
     created += inserted.length;
