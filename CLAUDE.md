@@ -32,6 +32,8 @@ etapa. Siga a ordem de implementação da seção 8.
 - `npm run db:migrate`: aplica as migrations no Supabase (usa `DATABASE_URL_MIGRATIONS`)
 - `/pesquisa [nicho] [quantidade]` (no Claude Code): pesquisa experts e cadastra os novos
   (ver README e `pesquisa/config.md`)
+- `/analisar [quantidade]` (no Claude Code): analisa os leads cadastrados pelo link em
+  "Novo expert" e preenche os campos vazios
 
 ## Arquitetura
 
@@ -176,6 +178,43 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-09 — Cadastro pelo link + `/analisar` (extra, pedido do usuário):**
+  - **Em "Novo expert"**, o quadro "Cadastrar pelo link" fica acima do
+    formulário.
+    - O usuário cola o link do perfil e o lead é criado na hora, com:
+      - o @ e a plataforma tirados do link (aceita o link sem `https://`);
+      - nome provisório `@handle`, o usuário como responsável e a origem
+        "Cadastro pelo link";
+      - a tag `analisar-ia`, que é a fila de análise. Não foi preciso mudar o
+        modelo de dados.
+    - Perfil já cadastrado mostra o erro com o link "Abrir o lead".
+    - A ficha mostra o aviso "Aguardando a análise da IA" enquanto o lead tiver
+      a tag.
+  - **O comando `/analisar`** (`.claude/skills/analisar/SKILL.md`, modelo sonnet)
+    segue as mesmas regras do `/pesquisa`:
+    - nunca abre as redes sociais;
+    - usa WebSearch com `allowed_domains`;
+    - no máximo 3 buscas e 2 leituras de página por lead.
+  - **A gravação** é feita por `saveAnalyses` (`src/lib/research/analysis.ts`),
+    pelos scripts `npm run analisar-pendentes` e
+    `npm run analisar-salvar -- <arquivo> [--simular]`:
+    - **só preenche campos vazios**: o que o usuário digitou fica;
+    - o nome só é trocado se ainda for o provisório;
+    - o nicho precisa existir no sistema ou no config;
+    - o contato só entra com a fonte;
+    - o bloco "[Análise IA · data · a revisar]" é acrescentado às observações;
+    - o score é recalculado;
+    - o lead sai da fila, com uma nota na linha do tempo dizendo o que foi
+      preenchido;
+    - não há filtro de faixa de seguidores, porque quem escolheu o lead foi o
+      usuário.
+  - **Prova:** o perfil precisa aparecer na resposta de uma busca registrada.
+    Sem isso, o lead continua na fila. `"encontrado": false` tira o lead da
+    fila com o aviso "preencha à mão".
+  - **Testes:** `tests/db/analise.ts` e `tests/e2e/analise.ts`.
+  - O `tests/e2e/etapa3.ts` conta com o banco sem leads reais. Com os leads da
+    pesquisa, os passos que contam linhas ("Lista vazia", "101 experts" e os
+    filtros) falham; os demais passam.
 - **2026-11-09 — Pesquisa de experts (`/pesquisa`, extra fora do MVP, pedido do usuário):**
   - Comando do Claude Code em `.claude/skills/pesquisa/SKILL.md` (modelo
     sonnet). Usa só WebSearch e WebFetch, sem API paga, e **nunca abre as redes
@@ -218,7 +257,8 @@ etapa. Siga a ordem de implementação da seção 8.
 
     Testado: uma busca real foi registrada, e os 10 perfis da resposta valeram
     como prova.
-  - **Pendente:** a rodada piloto; a rodada noturna (launchd), só depois do piloto.
+  - **Piloto (2026-11-09):** 10 leads gravados, sem descartes, com 19 buscas.
+  - **Pendente:** a rodada noturna (launchd), depois da revisão do piloto.
 - **2026-11-07 — Segurança e deploy (Etapa 12):**
   - **Auditoria automática** em `tests/db/etapa12.ts`:
     - RLS ligada nas 18 tabelas;
@@ -396,5 +436,6 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 11. Dashboard (concluída em 2026-11-07)
 - [x] 12. Revisão de permissões (RLS) e segurança (concluída em 2026-11-07).
   O deploy está pronto, mas depende do GitHub e da Vercel do usuário (ver README).
-- Extra: pesquisa de experts com `/pesquisa` (Fase 1 em 2026-11-09; piloto e
-  rodada noturna pendentes).
+- Extra: pesquisa de experts com `/pesquisa` (Fase 1 e piloto de 10 leads em
+  2026-11-09; rodada noturna pendente).
+- Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).

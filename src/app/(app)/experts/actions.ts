@@ -16,6 +16,7 @@ import { findDuplicate } from "@/lib/experts/queries";
 import { expertFormSchema, firstFieldErrors } from "@/lib/experts/validation";
 import { MANUAL_ACTIVITY_TYPES } from "@/lib/labels";
 import { MoveError } from "@/lib/pipeline/move";
+import { AnalysisError, createForAnalysis } from "@/lib/research/analysis";
 import { computeScore } from "@/lib/score";
 import { getScoreWeights } from "@/lib/settings";
 
@@ -79,6 +80,30 @@ export async function saveExpert(
   }
 
   redirect(`/experts/${savedId}`);
+}
+
+export type LinkFormState = {
+  error?: string;
+  existingId?: string;
+};
+
+// Cadastro pelo link: cria o lead só com o @ e a plataforma e o põe na fila de
+// análise da IA (o /analisar do Claude Code preenche o resto).
+export async function createFromLink(_prev: LinkFormState, formData: FormData): Promise<LinkFormState> {
+  const user = await getCurrentUser();
+  const url = String(formData.get("profileUrl") ?? "").slice(0, 500);
+
+  let createdId: string;
+  try {
+    createdId = await queryAsUser((tx) => createForAnalysis(tx, url, user.id));
+  } catch (error) {
+    if (error instanceof AnalysisError) return { error: error.message, existingId: error.existingId };
+    if (isUniqueViolation(error, "experts_platform_handle_unique")) {
+      return { error: "Esse perfil já está no sistema." };
+    }
+    throw error;
+  }
+  redirect(`/experts/${createdId}`);
 }
 
 // Exclusão lógica (soft delete), restrita ao Admin (regra 9).

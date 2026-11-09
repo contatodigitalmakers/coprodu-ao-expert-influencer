@@ -47,11 +47,13 @@ export const roundFileSchema = z.object({
   candidatos: z.array(z.unknown()),
 });
 
-const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value);
+export const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value);
+
+type NotesInput = Pick<Candidate, "resumo" | "produto" | "fonteProduto" | "provas" | "mensagemSugerida">;
 
 // Observações do lead: o perfil montado pela IA, com fontes e data.
-export function researchNotes(candidate: Candidate, followers: number | null, today: string) {
-  const lines = [`[${RESEARCH_SOURCE} · ${today} · a revisar]`];
+export function researchNotes(candidate: NotesInput, followers: number | null, today: string, title = RESEARCH_SOURCE) {
+  const lines = [`[${title} · ${today} · a revisar]`];
   if (candidate.resumo) lines.push(`Resumo: ${candidate.resumo}`);
   lines.push(
     followers === null

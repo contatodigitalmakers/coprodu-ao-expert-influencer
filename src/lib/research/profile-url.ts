@@ -12,9 +12,12 @@ const INSTAGRAM_RESERVED = new Set([
 ]);
 
 export function profileFromUrl(raw: string): ProfileRef | null {
+  // Aceita o link colado sem "https://" (ex.: "instagram.com/fulana").
+  const text = raw.trim();
+  const withProtocol = /^[a-z][a-z0-9+.-]*:/i.test(text) ? text : `https://${text}`;
   let url: URL;
   try {
-    url = new URL(raw.trim());
+    url = new URL(withProtocol);
   } catch {
     return null;
   }

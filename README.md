@@ -126,6 +126,30 @@ npm run pesquisa-salvar -- tmp/pesquisa/<rodada>.json             # grava
 - **LGPD:** se alguém pedir para ser removido, excluir não basta (os dados
   continuam no banco, só escondidos). É preciso apagar ou anonimizar o cadastro.
 
+## Cadastro pelo link (`/analisar`)
+
+Para um perfil que você encontrou por conta própria:
+
+1. Em **Experts → Novo expert**, cole o link do perfil (Instagram, TikTok ou
+   YouTube) em "Cadastrar pelo link" e clique em **Cadastrar e analisar**.
+   - O lead é criado na hora em "Novo lead", com você como responsável e a tag
+     `analisar-ia`.
+   - A ficha mostra "Aguardando a análise da IA".
+2. No Claude Code, dentro desta pasta, digite `/analisar`. Para limitar a
+   quantidade, use `/analisar 5`.
+   - A IA pesquisa cada perfil da fila do mesmo jeito do `/pesquisa`: sem abrir
+     as redes sociais.
+   - Ela preenche nome, nicho, seguidores, cidade, qualificação, produto,
+     resumo e mensagem sugerida.
+3. Confira a ficha:
+   - só os campos vazios são preenchidos, e o que você digitou fica como está;
+   - a linha do tempo diz o que a IA preencheu;
+   - se o perfil não aparece no buscador, o lead sai da fila com o aviso
+     "preencha à mão".
+
+Por baixo, o comando chama `npm run analisar-pendentes` e
+`npm run analisar-salvar -- tmp/pesquisa/analise-<data>.json [--simular]`.
+
 ## Testes
 
 - **Verificações:**

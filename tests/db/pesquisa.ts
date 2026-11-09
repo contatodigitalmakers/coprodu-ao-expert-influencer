@@ -26,6 +26,9 @@ async function main() {
     ["https://www.youtube.com/watch?v=abc", null],
     ["https://linktr.ee/ana", null],
     ["javascript:alert(1)", null],
+    ["instagram.com/Sem.Protocolo", "instagram:sem.protocolo"],
+    ["www.tiktok.com/@sem.protocolo", "tiktok:sem.protocolo"],
+    ["@so.o.arroba", null],
   ];
   for (const [url, expected] of cases) {
     const profile = profileFromUrl(url);

@@ -7,7 +7,9 @@ allowed-tools:
   - WebSearch
   - WebFetch
   - Read
+  - Write(/tmp/pesquisa/**)
   - Edit(/tmp/pesquisa/**)
+  - Bash(npm run pesquisa-existentes)
   - Bash(npm run pesquisa-existentes *)
   - Bash(npm run pesquisa-salvar *)
 ---

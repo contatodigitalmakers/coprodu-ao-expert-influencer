@@ -12,7 +12,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "pesquisa-existentes": "tsx --env-file=.env.local scripts/pesquisa/existentes.ts",
-    "pesquisa-salvar": "tsx --env-file=.env.local scripts/pesquisa/salvar.ts"
+    "pesquisa-salvar": "tsx --env-file=.env.local scripts/pesquisa/salvar.ts",
+    "analisar-pendentes": "tsx --env-file=.env.local scripts/pesquisa/analisar-pendentes.ts",
+    "analisar-salvar": "tsx --env-file=.env.local scripts/pesquisa/analisar-salvar.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

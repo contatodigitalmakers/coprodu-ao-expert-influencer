@@ -1,5 +1,6 @@
 import {
   ArrowRightLeftIcon,
+  SparklesIcon,
   CalendarIcon,
   ExternalLinkIcon,
   FileTextIcon,
@@ -30,6 +31,7 @@ import { getExpertProposals } from "@/lib/proposals/queries";
 import { getFormOptions } from "@/lib/experts/queries";
 import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp, plural, todayInSaoPaulo } from "@/lib/format";
 import { ACTIVITY_TYPE_LABELS, PLATFORM_LABELS } from "@/lib/labels";
+import { ANALYSIS_TAG } from "@/lib/research/analysis";
 import { addActivity, deleteExpert } from "../actions";
 import { ScoreBadge, TagBadge } from "../_components/badges";
 import { ActivityForm } from "./activity-form";
@@ -114,6 +116,17 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
           <TagBadge key={tag.id} tag={tag} />
         ))}
       </div>
+
+      {expert.tags.some((tag) => tag.name === ANALYSIS_TAG) && (
+        <p className="flex items-start gap-2 rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">
+          <SparklesIcon className="mt-0.5 size-4 shrink-0" />
+          <span>
+            <span className="font-medium text-foreground">Aguardando a análise da IA.</span> Rode{" "}
+            <code>/analisar</code> no Claude Code para preencher os dados do perfil. Só os campos vazios são
+            preenchidos.
+          </span>
+        </p>
+      )}
 
       <StageMoveControl
         expert={{ id: expert.id, name: expert.name }}
