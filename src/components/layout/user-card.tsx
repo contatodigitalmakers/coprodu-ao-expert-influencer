@@ -7,8 +7,8 @@ export async function UserCard() {
   const user = await getCurrentUser();
 
   return (
-    <div className="flex items-center justify-between gap-2 rounded-md border bg-background p-2">
-      <div className="min-w-0">
+    <div className="flex items-center justify-between gap-2 rounded-md border bg-background p-2 md:group-data-[collapsed=true]/sidebar:justify-center md:group-data-[collapsed=true]/sidebar:border-0 md:group-data-[collapsed=true]/sidebar:bg-transparent md:group-data-[collapsed=true]/sidebar:p-0">
+      <div className="min-w-0 md:group-data-[collapsed=true]/sidebar:hidden">
         <p className="truncate text-sm font-medium">{user.name}</p>
         <p className="truncate text-xs text-muted-foreground">{user.email}</p>
       </div>

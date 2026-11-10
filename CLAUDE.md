@@ -182,6 +182,29 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-10 — Versão para celular e menu reduzível (pedido do usuário):**
+  - **Menu** (`src/components/layout/app-shell.tsx`, que o `layout.tsx` da área
+    logada usa):
+    - **computador (a partir de `md`, 768 px):** coluna fixa na lateral, com
+      botão para **reduzir a só ícones**; a escolha fica no `localStorage` deste
+      navegador (`central-comercial:menu-reduzido`);
+    - **celular:** barra no topo com o botão do menu, que abre uma gaveta por
+      cima da página; fecha ao tocar num item, no X ou fora dela;
+    - o estado reduzido é o atributo `data-collapsed` do menu, e os textos somem
+      por CSS (`md:group-data-[collapsed=true]/sidebar:hidden`), então o cartão
+      do usuário, que vem do servidor, também reage;
+    - os links têm `title` e `aria-label`, para o menu reduzido continuar
+      acessível.
+  - O conteúdo usa `p-4` no celular e `p-8` no computador.
+  - **Lista de experts:** no celular, mostra só a coluna Expert, com score,
+    etapa, nicho e seguidores numa linha embaixo do nome. As colunas completas
+    continuam no computador.
+  - Pipeline (kanban e lista), dashboard, ficha e formulários já cabiam; o
+    kanban rola de lado, como esperado.
+  - **Teste:** `tests/e2e/mobile.ts` (390 px) confere que 14 telas não passam da
+    largura, que o menu abre e fecha como gaveta, e que no computador o menu
+    reduz, lembra a escolha ao recarregar e expande. Os prints ficam em
+    `tmp/e2e/screens/mobile_*.png`.
 - **2026-11-10 — As 3 mensagens da sequência de prospecção (pedido do usuário):**
   - O `/pesquisa` e o `/analisar` não escrevem mais uma "mensagem sugerida": cada
     lead ganha, nas observações, as 3 mensagens que o SDR copia conforme a

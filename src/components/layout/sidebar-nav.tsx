@@ -21,12 +21,12 @@ const NAV_ITEMS = [
 
 // Menu com o item da página atual destacado. Lê a URL, então precisa ficar
 // dentro de <Suspense> (o fallback é SidebarNavLinks sem destaque).
-export function SidebarNav() {
+export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const activeSegment = useSelectedLayoutSegment();
-  return <SidebarNavLinks activeSegment={activeSegment} />;
+  return <SidebarNavLinks activeSegment={activeSegment} onNavigate={onNavigate} />;
 }
 
-export function SidebarNavLinks({ activeSegment }: { activeSegment?: string | null }) {
+export function SidebarNavLinks({ activeSegment, onNavigate }: { activeSegment?: string | null; onNavigate?: () => void }) {
   return (
     <nav className="flex flex-col gap-1">
       {NAV_ITEMS.map(({ href, segment, label, icon: Icon }) => {
@@ -35,15 +35,19 @@ export function SidebarNavLinks({ activeSegment }: { activeSegment?: string | nu
           <Link
             key={href}
             href={href}
+            onClick={onNavigate}
+            title={label}
+            aria-label={label}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
+              "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors md:py-1.5",
+              "md:group-data-[collapsed=true]/sidebar:justify-center",
               isActive
                 ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
                 : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
             )}
           >
-            <Icon className="size-4" />
-            {label}
+            <Icon className="size-4 shrink-0" />
+            <span className="md:group-data-[collapsed=true]/sidebar:hidden">{label}</span>
           </Link>
         );
       })}

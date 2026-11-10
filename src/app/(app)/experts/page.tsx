@@ -91,12 +91,12 @@ async function ExpertsTable({ searchParams }: Pick<PageProps<"/experts">, "searc
           <TableHeader>
             <TableRow>
               <TableHead>Expert</TableHead>
-              <TableHead>Nicho</TableHead>
-              <TableHead className="text-right">Seguidores</TableHead>
-              <TableHead>Etapa</TableHead>
-              <TableHead>Responsável</TableHead>
-              <TableHead>Score</TableHead>
-              <TableHead>Tags</TableHead>
+              <TableHead className="max-md:hidden">Nicho</TableHead>
+              <TableHead className="text-right max-md:hidden">Seguidores</TableHead>
+              <TableHead className="max-md:hidden">Etapa</TableHead>
+              <TableHead className="max-md:hidden">Responsável</TableHead>
+              <TableHead className="max-md:hidden">Score</TableHead>
+              <TableHead className="max-md:hidden">Tags</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -109,17 +109,24 @@ async function ExpertsTable({ searchParams }: Pick<PageProps<"/experts">, "searc
                   <div className="text-xs text-muted-foreground">
                     @{row.handle} · {PLATFORM_LABELS[row.platform]}
                   </div>
+                  {/* Celular: os dados das outras colunas vão aqui embaixo. */}
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground md:hidden">
+                    <ScoreBadge score={row.score} tier={row.scoreTier} />
+                    <span>{row.stageName}</span>
+                    <span>· {row.nicheName ?? "sem nicho"}</span>
+                    <span>· {formatFollowers(row.followers)} seguidores</span>
+                  </div>
                 </TableCell>
-                <TableCell>{row.nicheName ?? "—"}</TableCell>
-                <TableCell className="text-right tabular-nums">{formatFollowers(row.followers)}</TableCell>
-                <TableCell>{row.stageName}</TableCell>
-                <TableCell>
+                <TableCell className="max-md:hidden">{row.nicheName ?? "—"}</TableCell>
+                <TableCell className="text-right tabular-nums max-md:hidden">{formatFollowers(row.followers)}</TableCell>
+                <TableCell className="max-md:hidden">{row.stageName}</TableCell>
+                <TableCell className="max-md:hidden">
                   {row.ownerName ?? <span className="text-muted-foreground">Não atribuído</span>}
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:hidden">
                   <ScoreBadge score={row.score} tier={row.scoreTier} />
                 </TableCell>
-                <TableCell>
+                <TableCell className="max-md:hidden">
                   <div className="flex max-w-56 flex-wrap gap-1">
                     {row.tags.map((tag) => (
                       <TagBadge key={tag.id} tag={tag} />
