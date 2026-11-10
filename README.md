@@ -33,7 +33,9 @@ marcando *Auto Confirm User*. O cadastro aberto fica desligado.
 
 ## Deploy na Cloudflare
 
-O app roda em **Cloudflare Workers** com o adaptador `@opennextjs/cloudflare`. A
+O app roda em **Cloudflare Workers**, em
+https://central-comercial.contatodigitalmakerss.workers.dev, com o adaptador
+`@opennextjs/cloudflare`. A
 configuração está em `wrangler.jsonc` e `open-next.config.ts`. O pacote tem
 cerca de 2,3 MiB comprimido e cabe no plano grátis, que aceita até 3 MiB.
 

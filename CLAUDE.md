@@ -228,9 +228,15 @@ etapa. Siga a ordem de implementação da seção 8.
       reais;
     - uma requisição levou 30 s uma vez (provavelmente a conexão com o pooler)
       e não se repetiu em mais 3 rodadas.
-  - **Pendente, por depender do usuário:** `npx wrangler login`, depois
-    `npm run deploy`, o segredo `DATABASE_URL` e o Site URL no Supabase (ver
-    README).
+  - **Publicado em 2026-11-10:**
+    - endereço: https://central-comercial.contatodigitalmakerss.workers.dev;
+    - conta da Cloudflare: contatodigitalmakerss@gmail.com;
+    - o segredo `DATABASE_URL` foi cadastrado com `wrangler secret put`;
+    - testes de tela no endereço publicado: `analise` 6/6, `etapa5` 9/9,
+      `etapa9` 6/6 e `etapa10` 9/9.
+  - **Pendente, por depender do usuário:** o Site URL e as Redirect URLs no
+    Supabase (*Authentication → URL Configuration*). O login por e-mail e senha
+    já funciona sem isso; eles só valem para links enviados por e-mail.
 - **2026-11-09 — Cadastro pelo link + `/analisar` (extra, pedido do usuário):**
   - **Em "Novo expert"**, o quadro "Cadastrar pelo link" fica acima do
     formulário.
@@ -487,7 +493,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 10. Propostas (concluída em 2026-11-06)
 - [x] 11. Dashboard (concluída em 2026-11-07)
 - [x] 12. Revisão de permissões (RLS) e segurança (concluída em 2026-11-07).
-  O deploy é na Cloudflare e depende do login do usuário (ver README).
+  Publicado na Cloudflare em 2026-11-10 (ver README).
 - Extra: pesquisa de experts com `/pesquisa` (Fase 1 e piloto de 10 leads em
   2026-11-09; rodada noturna pendente).
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).
