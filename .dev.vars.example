@@ -1,0 +1,4 @@
+# Copie para .dev.vars (fora do Git). Usado só pelo `npm run preview`, que roda
+# o app no runtime da Cloudflare no seu computador.
+# Pooler de transação do Supabase (o mesmo DATABASE_URL do .env.local).
+DATABASE_URL=

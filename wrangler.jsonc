@@ -1,0 +1,24 @@
+// Cloudflare Workers (deploy com o adaptador @opennextjs/cloudflare).
+// Variáveis e segredos ficam no painel da Cloudflare ou em `wrangler secret put`,
+// nunca aqui: este arquivo vai para o Git.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "central-comercial",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Precisa ter o mesmo valor de "name".
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "central-comercial"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

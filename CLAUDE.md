@@ -18,7 +18,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - Tailwind CSS + shadcn/ui
 - Supabase (Postgres, Auth, Row Level Security)
 - Drizzle ORM (schema, migrations e consultas)
-- Deploy na Vercel
+- Deploy na Cloudflare Workers, com o adaptador `@opennextjs/cloudflare`
 
 @AGENTS.md
 
@@ -30,6 +30,8 @@ etapa. Siga a ordem de implementação da seção 8.
 - `npx drizzle-kit generate --custom --name=<nome>`: migration SQL escrita à mão
   (triggers, funções)
 - `npm run db:migrate`: aplica as migrations no Supabase (usa `DATABASE_URL_MIGRATIONS`)
+- `npm run preview`: build da Cloudflare rodando no computador (http://localhost:8787, usa `.dev.vars`)
+- `npm run deploy`: build e envio para a Cloudflare (precisa de `npx wrangler login`)
 - `/pesquisa [nicho] [quantidade]` (no Claude Code): pesquisa experts e cadastra os novos
   (ver README e `pesquisa/config.md`)
 - `/analisar [quantidade]` (no Claude Code): analisa os leads cadastrados pelo link em
@@ -98,6 +100,8 @@ etapa. Siga a ordem de implementação da seção 8.
   cache): `npm run build`, depois `npx next start -p 3200`, e
   `BASE_URL=http://localhost:3200` nos comandos abaixo. Sem `BASE_URL`, o padrão
   é o `npm run dev` na porta 3000.
+  Para testar no runtime da Cloudflare: `npm run preview` (porta 8787, precisa do
+  `.dev.vars`) e `BASE_URL=http://localhost:8787`.
   1. `npx tsx --env-file=.env.local tests/e2e/test-user.ts create`: cria um
      login de teste (admin) direto no Supabase. A senha fica em
      `tmp/e2e/test-user.json`. Use `delete` para apagar.
@@ -178,6 +182,55 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-10 — Deploy na Cloudflare (pedido do usuário; substitui a Vercel):**
+  - **Configuração:**
+    - adaptador `@opennextjs/cloudflare` 1.20.16 e `wrangler` 4.159.0 (versões
+      fixas);
+    - `wrangler.jsonc` (worker `central-comercial`, com `nodejs_compat` e
+      observabilidade);
+    - `open-next.config.ts` com o cache de arquivos estáticos, só de leitura,
+      sem R2, porque não há revalidação;
+    - `public/_headers` deixa os arquivos de `/_next/static` em cache de longa
+      duração;
+    - o `vercel.json` foi removido.
+  - **Banco** (`src/db/index.ts`):
+    - os Workers não deixam reaproveitar conexões entre requisições, então na
+      Cloudflare cada `runAsUser` ou `runAsAnon` abre uma conexão (`max: 1`) e
+      a fecha no fim;
+    - no Node, a conexão continua compartilhada;
+    - a detecção é por `navigator.userAgent === "Cloudflare-Workers"`;
+    - o `DATABASE_URL` passou a ser lido na hora do uso, e não ao carregar o
+      módulo.
+  - **Segredos:**
+    - o adaptador copia **todo** o `.env.local` para
+      `.open-next/cloudflare/next-env.mjs`, que vai junto com o código, com a
+      senha do banco e o `DATABASE_URL_MIGRATIONS`;
+    - por isso `preview` e `deploy` rodam `scripts/cloudflare/env-publico.mjs`
+      depois do build, que deixa só as `NEXT_PUBLIC_`;
+    - o `DATABASE_URL` vai como segredo (`wrangler secret put`);
+    - para o `preview`, ele fica no `.dev.vars`, fora do Git.
+
+    Conferido: depois do script, a senha não aparece em nenhum arquivo de
+    `.open-next`.
+  - **Proxy:**
+    - o `proxy.ts` do Next 16 roda em Node, o que o adaptador suporta desde a
+      1.20.3 como experimental (o build avisa);
+    - mantido assim porque os testes passaram;
+    - se der problema, a alternativa é voltar para `middleware.ts` no runtime
+      edge.
+  - **Tamanho:** 2,28 MiB comprimido. O plano grátis aceita até 3 MiB, e o pago,
+    10 MiB.
+  - **Testes no `npm run preview`** (runtime da Cloudflare):
+    - `analise` 6/6, `etapa5` 9/9, `etapa7` 7/7, `etapa9` 6/6 e `etapa10` 9/9
+      (com a página pública da proposta);
+    - `etapa3` 11/16, as mesmas falhas de contagem do Node;
+    - o `etapa8` não foi rodado, para não mexer nos contadores dos templates
+      reais;
+    - uma requisição levou 30 s uma vez (provavelmente a conexão com o pooler)
+      e não se repetiu em mais 3 rodadas.
+  - **Pendente, por depender do usuário:** `npx wrangler login`, depois
+    `npm run deploy`, o segredo `DATABASE_URL` e o Site URL no Supabase (ver
+    README).
 - **2026-11-09 — Cadastro pelo link + `/analisar` (extra, pedido do usuário):**
   - **Em "Novo expert"**, o quadro "Cadastrar pelo link" fica acima do
     formulário.
@@ -276,12 +329,11 @@ etapa. Siga a ordem de implementação da seção 8.
     - `shadcn` passou para devDependencies, e o `npm audit --omit=dev` ficou em
       0 vulnerabilidades (os alertas restantes são de ferramentas de
       desenvolvimento).
-  - **Deploy:** `vercel.json` deixa as funções em São Paulo (`gru1`). O passo a
-    passo está no README.
+  - **Deploy:** era na Vercel (`vercel.json`, região `gru1`). Em 2026-11-10 passou
+    para a Cloudflare (ver a decisão dessa data).
     - **Pendente, por depender do usuário:** o repositório remoto
       `contatodigitalmakers/coprodu-ao-expert-influencer` é **público** e a conta
       `joshceccon` só tem leitura nele, então o código não foi enviado;
-    - a CLI da Vercel não está instalada nem com login.
   - O usuário de teste foi apagado no fim. Para rodar `tests/e2e`, crie-o de
     novo com `tests/e2e/test-user.ts create`.
   - O `tests/e2e/etapa8.ts` registra resultados em templates reais e aumenta
@@ -435,7 +487,7 @@ etapa. Siga a ordem de implementação da seção 8.
 - [x] 10. Propostas (concluída em 2026-11-06)
 - [x] 11. Dashboard (concluída em 2026-11-07)
 - [x] 12. Revisão de permissões (RLS) e segurança (concluída em 2026-11-07).
-  O deploy está pronto, mas depende do GitHub e da Vercel do usuário (ver README).
+  O deploy é na Cloudflare e depende do login do usuário (ver README).
 - Extra: pesquisa de experts com `/pesquisa` (Fase 1 e piloto de 10 leads em
   2026-11-09; rodada noturna pendente).
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).

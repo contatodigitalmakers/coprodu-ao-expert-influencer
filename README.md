@@ -8,7 +8,8 @@ Escopo completo em [docs/escopo.md](docs/escopo.md). As regras do projeto, as
 decisões tomadas e a arquitetura estão em [CLAUDE.md](CLAUDE.md).
 
 **Stack:** Next.js 16 (App Router) + TypeScript, Tailwind CSS 4 + shadcn/ui,
-Supabase (Postgres, Auth e Row Level Security), Drizzle ORM e Vercel.
+Supabase (Postgres, Auth e Row Level Security), Drizzle ORM e Cloudflare Workers
+(com o adaptador [OpenNext](https://opennext.js.org/cloudflare)).
 
 ## Rodar no computador
 
@@ -30,39 +31,64 @@ Supabase (Postgres, Auth e Row Level Security), Drizzle ORM e Vercel.
 Os logins são criados em **Supabase → Authentication → Users → Add user**,
 marcando *Auto Confirm User*. O cadastro aberto fica desligado.
 
-## Deploy na Vercel
+## Deploy na Cloudflare
 
-1. **GitHub.** Envie o código para um repositório **privado**:
+O app roda em **Cloudflare Workers** com o adaptador `@opennextjs/cloudflare`. A
+configuração está em `wrangler.jsonc` e `open-next.config.ts`. O pacote tem
+cerca de 2,3 MiB comprimido e cabe no plano grátis, que aceita até 3 MiB.
+
+**Primeira vez:**
+
+1. **Login.** Rode `npx wrangler login`, que abre o navegador para você
+   autorizar a sua conta da Cloudflare. Para conferir: `npx wrangler whoami`.
+2. **Deploy.** Rode `npm run deploy`. O comando:
+   - faz o build com o adaptador;
+   - tira do pacote tudo que não é `NEXT_PUBLIC_`
+     (`scripts/cloudflare/env-publico.mjs`), porque o adaptador copia o
+     `.env.local` inteiro, com a senha do banco;
+   - envia o resultado.
+
+   No fim aparece o endereço, ex.: `https://central-comercial.<sua-conta>.workers.dev`.
+3. **Segredo do banco.** O `DATABASE_URL` (pooler de **transação**, porta
+   6543) fica guardado na Cloudflare como segredo, e não no código. Para
+   enviá-lo direto do `.env.local`, sem copiar a senha:
 
    ```bash
-   git push -u origin main
+   grep '^DATABASE_URL=' .env.local | cut -d= -f2- | npx wrangler secret put DATABASE_URL
    ```
 
-   O repositório remoto configurado hoje (`contatodigitalmakers/coprodu-ao-expert-influencer`)
-   tem duas pendências:
-   - ele é **público**: deixe-o privado em *Settings → General → Danger Zone →
-     Change visibility*, ou crie um repositório novo e privado;
-   - a conta `joshceccon` tem só permissão de leitura nele: dê permissão de
-     escrita a essa conta, ou envie o código com uma conta que já tenha.
-2. **Vercel.** Em [vercel.com](https://vercel.com), clique em *Add New → Project*
-   e importe o repositório. A Vercel reconhece o Next.js sozinha.
-3. **Variáveis de ambiente** (em *Settings → Environment Variables*), com os
-   mesmos valores do `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-   - `DATABASE_URL`: o pooler de **transação**, porta 6543.
-
-   O `DATABASE_URL_MIGRATIONS` não é necessário na Vercel.
-4. **Deploy.** As funções rodam em São Paulo (`vercel.json` → `gru1`), perto do
-   banco.
-5. **Supabase.** Em *Authentication → URL Configuration*, troque o **Site URL**
-   pelo endereço da Vercel (ex.: `https://central-comercial.vercel.app`) e
-   adicione esse mesmo endereço em **Redirect URLs**.
-6. **Teste.** Entre com o seu login, crie uma proposta, marque como enviada e
+   Também dá para cadastrar no painel: *Workers & Pages → central-comercial →
+   Settings → Variables and Secrets*, com o tipo *Secret*. O
+   `DATABASE_URL_MIGRATIONS` não é necessário na Cloudflare.
+4. **Supabase.** Em *Authentication → URL Configuration*, troque o **Site URL**
+   pelo endereço da Cloudflare e adicione esse mesmo endereço em
+   **Redirect URLs**.
+5. **Teste.** Entre com o seu login, crie uma proposta, marque como enviada e
    abra o link público numa janela anônima.
 
-Quando uma mudança trouxer migration nova, rode `npm run db:migrate` (com o
-`.env.local`) antes ou junto do deploy.
+**Próximos deploys:** `npm run deploy`. Quando uma mudança trouxer migration
+nova, rode `npm run db:migrate` (com o `.env.local`) antes do deploy.
+
+**Testar no runtime da Cloudflare, no computador:**
+1. Copie `.dev.vars.example` para `.dev.vars` e preencha o `DATABASE_URL`.
+2. Rode `npm run preview` e abra http://localhost:8787.
+
+O `npm run dev` continua sendo o jeito do dia a dia.
+
+**Diferenças em relação ao Node:**
+- **Banco:** na Cloudflare, cada consulta abre e fecha a própria conexão, porque
+  os Workers não deixam reaproveitar conexões entre requisições.
+  No computador, a conexão continua compartilhada (`src/db/index.ts`).
+- **Proxy:** o `src/proxy.ts` (login) roda em Node, o que no adaptador ainda é
+  experimental. O build avisa disso, e os testes de tela passaram no
+  `npm run preview`.
+
+**Git (opcional, para deploy automático):** a Cloudflare pode fazer o build a
+cada push (*Workers & Pages → Create → Import a repository*). O repositório
+remoto atual (`contatodigitalmakers/coprodu-ao-expert-influencer`) tem duas
+pendências:
+- ele é **público**: deixe-o privado ou crie um repositório novo e privado;
+- a conta `joshceccon` só tem permissão de leitura nele.
 
 ## Pesquisa de experts (`/pesquisa`)
 

@@ -20,6 +20,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Scripts e arquivos de teste locais.
     "tmp/**",
+    // Build e cache local da Cloudflare.
+    ".open-next/**",
+    ".wrangler/**",
   ]),
 ]);
 
