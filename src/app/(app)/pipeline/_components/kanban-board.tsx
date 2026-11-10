@@ -4,7 +4,8 @@ import {
   DndContext,
   DragOverlay,
   KeyboardSensor,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useDraggable,
   useDroppable,
   useSensor,
@@ -43,7 +44,10 @@ export function KanbanBoard({
   });
   const [activeId, setActiveId] = useState<string | null>(null);
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    // Mouse: arrasta depois de mover 6 px. Toque: só arrasta ao segurar o card por
+    // um instante; deslizar o dedo rola a tela normalmente.
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } }),
     useSensor(KeyboardSensor),
   );
 
@@ -131,7 +135,7 @@ function DraggableCard({ card, maxDays }: { card: PipelineCard; maxDays: number 
       {...listeners}
       {...attributes}
       aria-label={`Lead ${card.name}`}
-      className={cn("cursor-grab touch-none active:cursor-grabbing", isDragging && "opacity-40")}
+      className={cn("cursor-grab select-none active:cursor-grabbing", isDragging && "opacity-40")}
     >
       <PipelineCardView card={card} maxDays={maxDays} />
     </div>

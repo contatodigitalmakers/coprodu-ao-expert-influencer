@@ -199,8 +199,12 @@ etapa. Siga a ordem de implementação da seção 8.
   - **Lista de experts:** no celular, mostra só a coluna Expert, com score,
     etapa, nicho e seguidores numa linha embaixo do nome. As colunas completas
     continuam no computador.
-  - Pipeline (kanban e lista), dashboard, ficha e formulários já cabiam; o
-    kanban rola de lado, como esperado.
+  - Pipeline (kanban e lista), dashboard, ficha e formulários já cabiam.
+  - **Kanban no toque:** o `PointerSensor` do dnd-kit e o `touch-none` do card
+    impediam rolar o quadro com o dedo. Agora são dois sensores: mouse (arrasta
+    depois de 6 px) e toque (só arrasta ao segurar o card por 250 ms; deslizar
+    rola). Conferido com toques simulados no Chrome: deslizar rola o quadro sem
+    arrastar, e segurar inicia o arrasto.
   - **Teste:** `tests/e2e/mobile.ts` (390 px) confere que 14 telas não passam da
     largura, que o menu abre e fecha como gaveta, e que no computador o menu
     reduz, lembra a escolha ao recarregar e expande. Os prints ficam em
