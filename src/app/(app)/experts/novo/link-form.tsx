@@ -27,7 +27,7 @@ export function LinkForm({ pendingCount, pendingHref }: { pendingCount: number; 
         <CardTitle>Cadastrar pelo link</CardTitle>
         <CardDescription>
           Cole o link do perfil no Instagram, TikTok ou YouTube. O lead é criado na hora e a IA preenche nome,
-          nicho, seguidores, qualificação, resumo e mensagem sugerida quando você rodar <code>/analisar</code> no
+          nicho, seguidores, qualificação, resumo, ideia do app e as 3 mensagens de prospecção quando você rodar <code>/analisar</code> no
           Claude Code.
         </CardDescription>
       </CardHeader>

@@ -60,7 +60,12 @@ const expertFields = {
   email: optionalText.pipe(z.email("E-mail inválido.").nullable()),
   city: optionalText,
   source: optionalText,
-  notes: optionalText,
+  // Observações têm mais espaço: guardam o perfil montado pela IA e as 3 mensagens.
+  notes: z
+    .string()
+    .trim()
+    .max(10000, "Texto muito longo.")
+    .transform((value) => value || null),
   sellsProduct: yesNo,
   productDescription: optionalText,
   hasMethod: yesNo,

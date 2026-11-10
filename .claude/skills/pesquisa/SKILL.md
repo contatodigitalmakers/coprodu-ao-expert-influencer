@@ -22,7 +22,8 @@ Você encontra experts (pessoas que ensinam algo na internet) para a Central
 Comercial prospectar. A empresa faz co-produção de apps com experts: o bom
 candidato ensina, tem audiência fiel e, de preferência, já vende curso ou mentoria.
 Os leads que você encontra entram no sistema em "Novo lead", sem responsável, para
-um humano revisar e prospectar um a um.
+um humano revisar e prospectar um a um, com as 3 mensagens da sequência de
+prospecção já escritas para cada um.
 
 ## Regras que nunca podem ser quebradas
 
@@ -100,9 +101,16 @@ um humano revisar e prospectar um a um.
    | `frequenciaConteudo` | o trecho mostra publicações recentes e regulares |
 
    - `resumo`: 2 a 3 frases sobre quem é, o que ensina e por que é um bom
-     candidato.
-   - `mensagemSugerida`: a primeira DM. Curta, com o primeiro nome, citando algo
-     específico do perfil, apresentando a co-produção de app sem prometer ganhos.
+     candidato (ou por que tem pouco fit).
+   - `ideiaApp`: o app em 1 ou 2 frases, com um nome sugerido e 2 ou 3 telas.
+   - `mensagens`: as 3 mensagens da sequência de prospecção, prontas para o SDR
+     copiar e enviar conforme a conversa avança. **Leia antes
+     `.claude/skills/pesquisa/mensagens.md`** (Read) e siga os modelos e as
+     regras de lá:
+     - `prospeccao`: primeira DM, sem pitch, terminando na pergunta se o expert
+       já tem sistema ou app;
+     - `amostra`: a proposta de mandar um rascunho sem compromisso;
+     - `convite`: o envio da amostra e o convite para a call de 30 minutos.
 9. **Escreva o arquivo da rodada** em `tmp/pesquisa/AAAA-MM-DD-HHMM.json`, com a
    data e a hora atuais, neste formato. Seguidores vão como texto, como
    apareceram: "48K", "12,5 mil", "1.2M".
@@ -129,7 +137,12 @@ um humano revisar e prospectar um a um.
          "problemaRecorrente": "sim",
          "frequenciaConteudo": "",
          "resumo": "Nutricionista que ensina reeducação alimentar para mulheres...",
-         "mensagemSugerida": "Oi, Ana! Vi seu conteúdo sobre...",
+         "ideiaApp": "App Emagrece 30: cardápio do dia, registro de refeições e peso, evolução semanal.",
+         "mensagens": {
+           "prospeccao": "Boa tarde, Ana, tudo bem? Acompanhei seu conteúdo e gostei muito de...\n\nFiquei curioso: ... ou você já tem algum sistema ou app próprio?",
+           "amostra": "Entendi, Ana! Pergunto porque a gente desenvolve apps próprios para experts, em parceria: ...",
+           "convite": "Ana, esse foi só um rascunho pra você visualizar como o Emagrece 30 poderia virar um app próprio, ..."
+         },
          "provas": [
            { "url": "https://www.instagram.com/ana.nutri/", "trecho": "48K Followers · Nutricionista..." }
          ]
@@ -144,7 +157,8 @@ um humano revisar e prospectar um a um.
     - Nunca "conserte" um descarte por prova ou nicho inventando dado.
 11. **Grave:** `npm run pesquisa-salvar -- <arquivo>`, com os mesmos parâmetros.
 12. **Resuma para o usuário, em português:**
-    - os criados: nome, @, plataforma e uma linha do porquê;
+    - os criados: nome, @, plataforma e uma linha do porquê. As 3 mensagens
+      ficam nas observações de cada lead: não repita no resumo;
     - os descartados, com o motivo;
     - os avisos;
     - o link "Lista para revisar" que o script mostrou.

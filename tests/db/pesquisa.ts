@@ -78,7 +78,12 @@ async function main() {
     problemaRecorrente: "sim",
     frequenciaConteudo: "",
     resumo: "Nutricionista que ensina reeducação alimentar.",
-    mensagemSugerida: "Oi, Ana! Vi seu conteúdo sobre reeducação alimentar.",
+    ideiaApp: "App Emagrece 30: cardápio do dia e registro de peso.",
+    mensagens: {
+      prospeccao: "Boa tarde, Ana, tudo bem? Acompanhei seu conteúdo.\n\nFiquei curioso: ou você já tem algum sistema ou app próprio?",
+      amostra: "Entendi, Ana! Pergunto porque a gente desenvolve apps próprios para experts, em parceria.",
+      convite: "Ana, esse foi só um rascunho. Você teria um horário amanhã ou depois de amanhã?",
+    },
     provas: [{ url: "https://www.instagram.com/ana.teste.e2e/", trecho: "48K Followers · Nutricionista" }],
     ...overrides,
   });
@@ -136,7 +141,15 @@ async function main() {
         ana?.source === "Pesquisa IA" && ana.ownerId === null && ana.stageId === stageNew.id && ana.score === 60 && ana.whatsapp === "5511999990000" && ana.followers === 48000,
         JSON.stringify(ana && { source: ana.source, owner: ana.ownerId, score: ana.score, whatsapp: ana.whatsapp, followers: ana.followers }),
       );
-      check("Observações com resumo, provas, data e mensagem", Boolean(ana?.notes?.startsWith("[Pesquisa IA · ") && ana.notes.includes("Provas:") && ana.notes.includes("Mensagem sugerida:")), ana?.notes ?? "");
+      check("Observações com resumo, provas, data e mensagem", Boolean(ana?.notes?.startsWith("[Pesquisa IA · ") && ana.notes.includes("Provas:") && ana.notes.includes("Ideia do app: App Emagrece 30")), ana?.notes ?? "");
+      const notes = ana?.notes ?? "";
+      const at = (text: string) => notes.indexOf(text);
+      check(
+        "Observações trazem as 3 mensagens na ordem, cada uma com o título da etapa",
+        at("1. Prospecção") > 0 && at("1. Prospecção") < at("Boa tarde, Ana") && at("Boa tarde, Ana") < at("2. Proposta de amostra") &&
+          at("2. Proposta de amostra") < at("Entendi, Ana!") && at("Entendi, Ana!") < at("3. Envio da amostra") && at("3. Envio da amostra") < at("amanhã ou depois de amanhã"),
+        notes,
+      );
       const [tagLink] = await tx
         .select({ name: tags.name })
         .from(expertTags)

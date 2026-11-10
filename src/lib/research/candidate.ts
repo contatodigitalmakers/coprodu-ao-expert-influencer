@@ -34,7 +34,16 @@ export const candidateSchema = z.object({
   problemaRecorrente: answer,
   frequenciaConteudo: answer,
   resumo: text(1200),
-  mensagemSugerida: text(1200),
+  // Ideia do app em 1 ou 2 frases (nome e telas); orienta a amostra.
+  ideiaApp: text(600),
+  // As 3 mensagens da sequência, prontas para copiar (ver .claude/skills/pesquisa/mensagens.md).
+  mensagens: z
+    .object({
+      prospeccao: text(900),
+      amostra: text(900),
+      convite: text(900),
+    })
+    .default({ prospeccao: "", amostra: "", convite: "" }),
   provas: z
     .array(z.object({ url: z.string().trim(), trecho: text(400) }))
     .default([]),
@@ -49,7 +58,14 @@ export const roundFileSchema = z.object({
 
 export const isHttpUrl = (value: string) => /^https?:\/\/\S+$/i.test(value);
 
-type NotesInput = Pick<Candidate, "resumo" | "produto" | "fonteProduto" | "provas" | "mensagemSugerida">;
+type NotesInput = Pick<Candidate, "resumo" | "produto" | "fonteProduto" | "provas" | "ideiaApp" | "mensagens">;
+
+// As 3 mensagens da sequência, na ordem da conversa. O título diz quando usar cada uma.
+const MESSAGE_STEPS = [
+  { key: "prospeccao", title: "1. Prospecção (primeiro contato)" },
+  { key: "amostra", title: "2. Proposta de amostra (quando responder que não tem sistema ou app)" },
+  { key: "convite", title: "3. Envio da amostra + convite para a call (logo depois de mandar o rascunho)" },
+] as const;
 
 // Observações do lead: o perfil montado pela IA, com fontes e data.
 export function researchNotes(candidate: NotesInput, followers: number | null, today: string, title = RESEARCH_SOURCE) {
@@ -68,8 +84,13 @@ export function researchNotes(candidate: NotesInput, followers: number | null, t
     lines.push("Provas:");
     for (const proof of proofs) lines.push(`- ${proof.url}${proof.trecho ? ` — "${proof.trecho}"` : ""}`);
   }
-  if (candidate.mensagemSugerida) lines.push("Mensagem sugerida:", candidate.mensagemSugerida);
-  return lines.join("\n").slice(0, 5000);
+  if (candidate.ideiaApp) lines.push(`Ideia do app: ${candidate.ideiaApp}`);
+  const steps = MESSAGE_STEPS.filter((step) => candidate.mensagens[step.key]);
+  if (steps.length) {
+    lines.push("", "Mensagens (copie a da etapa em que a conversa estiver):");
+    for (const step of steps) lines.push("", `${step.title}`, candidate.mensagens[step.key]);
+  }
+  return lines.join("\n").slice(0, 8000);
 }
 
 // Converte para a linha da importação (reaproveita validação, score e gravação).

@@ -80,8 +80,11 @@ apagado.
      faixa: quem escolheu o lead foi o usuário.
    - `resumo`: 2 a 3 frases sobre quem é, o que ensina e o que pesa a favor ou
      contra para a co-produção de app.
-   - `mensagemSugerida`: a primeira DM. Curta, com o primeiro nome, citando algo
-     específico do perfil, apresentando a co-produção de app sem prometer ganhos.
+   - `ideiaApp`: o app em 1 ou 2 frases, com um nome sugerido e 2 ou 3 telas.
+   - `mensagens`: as 3 mensagens da sequência de prospecção, prontas para o SDR
+     copiar e enviar conforme a conversa avança. **Leia antes
+     `.claude/skills/pesquisa/mensagens.md`** (Read) e siga os modelos e as
+     regras de lá: `prospeccao`, `amostra` e `convite`.
 5. **Escreva o arquivo** `tmp/pesquisa/analise-AAAA-MM-DD-HHMM.json`, com a data
    e a hora atuais, neste formato (um item por lead, com o `id` que o script
    mostrou):
@@ -107,7 +110,12 @@ apagado.
          "problemaRecorrente": "sim",
          "frequenciaConteudo": "",
          "resumo": "Nutricionista que ensina reeducação alimentar...",
-         "mensagemSugerida": "Oi, Ana! Vi seu conteúdo sobre...",
+         "ideiaApp": "App Emagrece 30: cardápio do dia, registro de refeições e peso, evolução semanal.",
+         "mensagens": {
+           "prospeccao": "Boa tarde, Ana, tudo bem? Acompanhei seu conteúdo e gostei muito de...\n\nFiquei curioso: ... ou você já tem algum sistema ou app próprio?",
+           "amostra": "Entendi, Ana! Pergunto porque a gente desenvolve apps próprios para experts, em parceria: ...",
+           "convite": "Ana, esse foi só um rascunho pra você visualizar como o Emagrece 30 poderia virar um app próprio, ..."
+         },
          "provas": [
            { "url": "https://www.instagram.com/ana.nutri/", "trecho": "Ana Souza · 48K Followers · Nutricionista..." }
          ]

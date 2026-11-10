@@ -95,7 +95,8 @@ async function main() {
             temMetodo: "sim",
             problemaRecorrente: "sim",
             resumo: "Nutricionista que ensina.",
-            mensagemSugerida: "Oi, Ana!",
+            ideiaApp: "App Comer Bem: cardápio e registro de refeições.",
+            mensagens: { prospeccao: "Boa tarde, Ana, tudo bem?", amostra: "Entendi, Ana!", convite: "Ana, esse foi só um rascunho." },
             provas: [{ url: "https://www.instagram.com/ana.analise.e2e/", trecho: "48K Followers" }],
           },
           { id: beaId, nome: "Bea IA", nicho: "Nutrição", seguidores: "20K", vendeProduto: "sim", whatsapp: "11977776666", resumo: "Personal." },
@@ -121,7 +122,7 @@ async function main() {
         JSON.stringify(anaAfter),
       );
       check("Ana: qualificação e score recalculado (60)", anaAfter.sellsProduct === true && anaAfter.hasMethod === true && anaAfter.productDescription === "Curso Comer Bem" && anaAfter.score === 60, `score ${anaAfter.score}`);
-      check("Ana: observações com o bloco da análise", Boolean(anaAfter.notes?.startsWith("[Análise IA · ") && anaAfter.notes.includes("Mensagem sugerida:")), anaAfter.notes ?? "");
+      check("Ana: observações com o bloco da análise e as 3 mensagens", Boolean(anaAfter.notes?.startsWith("[Análise IA · ") && anaAfter.notes.includes("1. Prospecção") && anaAfter.notes.includes("3. Envio da amostra") && anaAfter.notes.includes("Ideia do app:")), anaAfter.notes ?? "");
       const anaTags = await tx.select().from(expertTags).where(eq(expertTags.expertId, anaId));
       check("Ana: saiu da fila", anaTags.length === 0);
       const anaActivities = await tx.select().from(activities).where(and(eq(activities.expertId, anaId), eq(activities.type, "note")));

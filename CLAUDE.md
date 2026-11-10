@@ -182,6 +182,27 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-10 — As 3 mensagens da sequência de prospecção (pedido do usuário):**
+  - O `/pesquisa` e o `/analisar` não escrevem mais uma "mensagem sugerida": cada
+    lead ganha, nas observações, as 3 mensagens que o SDR copia conforme a
+    conversa avança, mais a "Ideia do app".
+  - **As mensagens** (`mensagens.prospeccao`, `.amostra` e `.convite` no JSON) e
+    as regras vêm do skill do usuário, adaptado em
+    `.claude/skills/pesquisa/mensagens.md`, que os dois comandos leem:
+    1. **Prospecção:** primeira DM sem pitch, terminando na pergunta "ou você já
+       tem algum sistema ou app próprio?";
+    2. **Proposta de amostra:** quando o expert diz que não tem sistema ou app;
+    3. **Envio da amostra + convite** para a call de 30 minutos.
+  - **Convite:** fecha sempre com "amanhã ou depois de amanhã", e não com dias
+    da semana, porque a mensagem é escrita agora e enviada só quando a conversa
+    chegar lá.
+  - **Regras:** mensagens prontas para colar, sem colchetes, sem preço, setup ou
+    percentuais, sem fatos não confirmados, uma pergunta por mensagem.
+  - **Observações:** cada mensagem sai com um título dizendo quando usá-la. O
+    limite do campo subiu de 5.000 para 10.000 caracteres, para caber o perfil e
+    as 3 mensagens.
+  - Os leads criados antes (os 10 do piloto e os analisados pelo link) continuam
+    com a mensagem única da versão anterior.
 - **2026-11-10 — Deploy na Cloudflare (pedido do usuário; substitui a Vercel):**
   - **Configuração:**
     - adaptador `@opennextjs/cloudflare` 1.20.16 e `wrangler` 4.159.0 (versões

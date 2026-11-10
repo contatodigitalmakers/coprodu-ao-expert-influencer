@@ -110,8 +110,11 @@ gasta o limite da sua assinatura.
   usa só o que o buscador mostra (título, link e resumo). Pode abrir páginas
   públicas fora das redes, como Linktree, site e página de venda.
 - Cada lead entra em "Novo lead", **sem responsável**, com a tag `pesquisa-ia`,
-  a origem "Pesquisa IA", o score e, nas observações, o resumo do perfil, as
-  provas (links) e uma mensagem sugerida para a primeira DM.
+  a origem "Pesquisa IA", o score e, nas observações, o resumo do perfil, a ideia
+  do app, as provas (links) e as **3 mensagens da sequência de prospecção**:
+  prospecção, proposta de amostra e envio da amostra com o convite para a call.
+  Copie a da etapa em que a conversa estiver. Os modelos e as regras estão em
+  [.claude/skills/pesquisa/mensagens.md](.claude/skills/pesquisa/mensagens.md).
 - Não inscreve em cadência, não atribui responsável e não manda mensagem.
 - Descarta (com o motivo, no resumo da rodada):
   - perfil que já está no sistema;
@@ -168,7 +171,7 @@ Para um perfil que você encontrou por conta própria:
    - A IA pesquisa cada perfil da fila do mesmo jeito do `/pesquisa`: sem abrir
      as redes sociais.
    - Ela preenche nome, nicho, seguidores, cidade, qualificação, produto,
-     resumo e mensagem sugerida.
+     resumo, ideia do app e as 3 mensagens da sequência.
 3. Confira a ficha:
    - só os campos vazios são preenchidos, e o que você digitou fica como está;
    - a linha do tempo diz o que a IA preencheu;
