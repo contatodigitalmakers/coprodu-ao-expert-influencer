@@ -148,6 +148,12 @@ etapa. Siga a ordem de implementação da seção 8.
   (fora do Git) e manter `.env.example` sem valores reais.
 - Ao final de cada etapa, depois que o usuário confirmar o teste, fazer o commit
   direto, sem pedir confirmação.
+- **Deploy automático (pedido do usuário em 2026-11-10):** ao terminar cada
+  pedido que mude o código do sistema, depois do commit, rodar `npm run deploy`
+  e conferir o site publicado (`/login` responde e, se der, o teste de tela
+  contra o endereço da Cloudflare), sem perguntar. Se a mudança trouxer
+  migration, rodar `npm run db:migrate` antes. Pedidos que só mexem em dados ou
+  nos comandos do Claude Code (`/pesquisa`, `/analisar`) não precisam de deploy.
 - Código simples e legível; nada fora do escopo do MVP sem pedido explícito.
 - Se algo no escopo estiver ambíguo, perguntar em vez de supor.
 
