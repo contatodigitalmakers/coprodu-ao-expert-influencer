@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *):not(.light *));
 
 @theme inline {
   --color-background: var(--background);
@@ -88,40 +88,71 @@
 }
 
 .dark {
-  --viz-series-1: #3987e5;
-  --viz-grid: #2c2c2a;
-  --viz-axis: #383835;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Escuro premium com verde-limão (referência: Mestres CRM). */
+  --viz-series-1: oklch(0.89 0.2 125);
+  --viz-grid: oklch(1 0 0 / 7%);
+  --viz-axis: oklch(1 0 0 / 14%);
+  --background: oklch(0.155 0.006 145);
+  --foreground: oklch(0.97 0.004 145);
+  --card: oklch(0.195 0.007 145);
+  --card-foreground: oklch(0.97 0.004 145);
+  --popover: oklch(0.225 0.008 145);
+  --popover-foreground: oklch(0.97 0.004 145);
+  --primary: oklch(0.9 0.2 125);
+  --primary-foreground: oklch(0.2 0.04 130);
+  --secondary: oklch(0.245 0.008 145);
+  --secondary-foreground: oklch(0.97 0.004 145);
+  --muted: oklch(0.235 0.008 145);
+  --muted-foreground: oklch(0.7 0.012 145);
+  --accent: oklch(0.255 0.01 145);
+  --accent-foreground: oklch(0.97 0.004 145);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 11%);
+  --ring: oklch(0.9 0.2 125 / 60%);
+  --chart-1: oklch(0.9 0.2 125);
+  --chart-2: oklch(0.75 0.17 150);
+  --chart-3: oklch(0.65 0.12 170);
+  --chart-4: oklch(0.55 0.08 180);
+  --chart-5: oklch(0.45 0.05 190);
+  --sidebar: oklch(0.155 0.006 145);
+  --sidebar-foreground: oklch(0.97 0.004 145);
+  --sidebar-primary: oklch(0.9 0.2 125);
+  --sidebar-primary-foreground: oklch(0.2 0.04 130);
+  --sidebar-accent: oklch(0.225 0.012 145);
+  --sidebar-accent-foreground: oklch(0.97 0.004 145);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.9 0.2 125 / 60%);
+  --lap-brand: oklch(0.9 0.2 125);
+  --lap-brand-soft: oklch(0.9 0.2 125 / 13%);
+  --lap-brand-glow: oklch(0.9 0.2 125 / 30%);
+}
+
+/* A página pública da proposta continua clara (é impressa em PDF). */
+.light {
+  --viz-series-1: #2a78d6;
+  --viz-grid: #e1e0d9;
+  --viz-axis: #c3c2b7;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  background: var(--background);
+  color: var(--foreground);
 }
 
 @layer base {
@@ -133,5 +164,126 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* ---- Acabamento escuro premium (classes lap-) ---- */
+.dark body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 760px 320px at 28% -40px, var(--lap-brand-soft), transparent 70%),
+    radial-gradient(ellipse 1100px 420px at 100% -80px, oklch(0.9 0.2 125 / 6%), transparent 70%);
+  background-repeat: no-repeat;
+}
+
+/* Cartão: camada de luz no topo, borda fina, luz de borda e sombra de verdade. */
+.dark .lap-cartao {
+  position: relative;
+  background-image: linear-gradient(180deg, oklch(1 0 0 / 3%), transparent 140px);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 4.5%),
+    0 1px 0 oklch(0 0 0 / 35%),
+    0 18px 36px -18px oklch(0 0 0 / 70%);
+}
+.dark .lap-cartao::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 16%), transparent);
+  pointer-events: none;
+}
+
+/* Herói: um por tela, com a luz verde atrás do número principal. */
+.dark .lap-heroi {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background-color: oklch(0.185 0.012 145);
+  background-image:
+    radial-gradient(ellipse 360px 220px at var(--lap-heroi-x, 85%) var(--lap-heroi-y, 10%), var(--lap-brand-glow), transparent 70%),
+    linear-gradient(135deg, oklch(0.9 0.2 125 / 9%), transparent 55%);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 7%),
+    inset 0 0 0 1px oklch(0.9 0.2 125 / 14%),
+    0 24px 48px -24px oklch(0 0 0 / 80%);
+}
+.dark .lap-heroi::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+.lap-titulo {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+}
+.lap-apagado {
+  color: var(--muted-foreground);
+}
+.lap-numero {
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+/* Rótulos pequenos em fonte de máquina de escrever. */
+.lap-rotulo {
+  font-family: var(--font-geist-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: var(--muted-foreground);
+}
+
+/* Barra de progresso com brilho verde. */
+.lap-trilho {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: oklch(0 0 0 / 35%);
+  box-shadow: inset 0 1px 2px oklch(0 0 0 / 50%);
+}
+.lap-barra {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, oklch(0.7 0.17 135), var(--primary));
+  box-shadow: 0 0 14px var(--lap-brand-glow);
+}
+
+/* Logo: quadrado com degradê da marca e aresta de luz. */
+.lap-logo {
+  display: inline-flex;
+  width: 1.5rem;
+  height: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  color: var(--primary-foreground);
+  background: linear-gradient(160deg, oklch(0.95 0.17 125), var(--primary) 55%, oklch(0.68 0.17 135));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 42%),
+    0 4px 14px -2px var(--lap-brand-glow);
+}
+
+/* Item levantado do menu. */
+.lap-elevado {
+  background-image: linear-gradient(180deg, oklch(1 0 0 / 7.5%), oklch(1 0 0 / 3.5%));
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 8%),
+    0 0 0 1px oklch(0.9 0.2 125 / 22%),
+    0 4px 10px -4px oklch(0 0 0 / 60%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

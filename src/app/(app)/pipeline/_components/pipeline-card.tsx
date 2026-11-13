@@ -19,7 +19,7 @@ export function PipelineCardView({
   return (
     <div
       className={cn(
-        "flex flex-col gap-1.5 rounded-lg border bg-card p-3 text-sm shadow-xs",
+        "lap-cartao flex flex-col gap-1.5 rounded-xl border bg-card p-3 text-sm",
         card.isOverdue && "border-destructive/60 bg-destructive/5",
         className,
       )}

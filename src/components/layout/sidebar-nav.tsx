@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 // Itens do menu lateral. "segment" é a primeira parte da URL (null = Fila do dia).
 // Novos módulos entram aqui conforme forem construídos.
 const NAV_ITEMS = [
+  { href: "/dashboard", segment: "dashboard", label: "Dashboard", icon: ChartColumnIcon },
   { href: "/", segment: null, label: "Fila do dia", icon: ListChecksIcon },
   { href: "/experts", segment: "experts", label: "Experts", icon: UsersIcon },
   { href: "/pipeline", segment: "pipeline", label: "Pipeline", icon: SquareKanbanIcon },
@@ -15,7 +16,6 @@ const NAV_ITEMS = [
   { href: "/propostas", segment: "propostas", label: "Propostas", icon: FileTextIcon },
   { href: "/cadencias", segment: "cadencias", label: "Cadências", icon: ListOrderedIcon },
   { href: "/templates", segment: "templates", label: "Templates", icon: MessageSquareTextIcon },
-  { href: "/dashboard", segment: "dashboard", label: "Dashboard", icon: ChartColumnIcon },
   { href: "/configuracoes", segment: "configuracoes", label: "Configurações", icon: SettingsIcon },
 ];
 
@@ -39,14 +39,14 @@ export function SidebarNavLinks({ activeSegment, onNavigate }: { activeSegment?:
             title={label}
             aria-label={label}
             className={cn(
-              "flex items-center gap-2 rounded-md px-2 py-2 text-sm transition-colors md:py-1.5",
-              "md:group-data-[collapsed=true]/sidebar:justify-center",
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors md:h-9 md:py-0",
+              "md:group-data-[collapsed=true]/sidebar:justify-center md:group-data-[collapsed=true]/sidebar:px-0",
               isActive
-                ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
+                ? "lap-elevado font-medium text-sidebar-accent-foreground"
+                : "text-sidebar-foreground/70 hover:bg-white/[0.05] hover:text-sidebar-foreground",
             )}
           >
-            <Icon className="size-4 shrink-0" />
+            <Icon className={cn("size-4 shrink-0", isActive && "text-primary")} />
             <span className="md:group-data-[collapsed=true]/sidebar:hidden">{label}</span>
           </Link>
         );

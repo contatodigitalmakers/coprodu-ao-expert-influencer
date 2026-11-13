@@ -15,11 +15,13 @@ export const metadata: Metadata = {
 // Página pública da proposta (link único, sem login). Abrir registra a visualização.
 export default function PublicProposalPage({ params }: PageProps<"/p/[token]">) {
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
-      <Suspense fallback={<Skeleton className="h-96 w-full" />}>
-        <PublicProposal params={params} />
-      </Suspense>
-    </main>
+    <div className="light flex flex-1 flex-col">
+      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 px-4 py-10">
+        <Suspense fallback={<Skeleton className="h-96 w-full" />}>
+          <PublicProposal params={params} />
+        </Suspense>
+      </main>
+    </div>
   );
 }
 

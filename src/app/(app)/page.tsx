@@ -49,20 +49,24 @@ async function Queue() {
         description="Fila do dia: tarefas de hoje e atrasadas, agrupadas por canal."
       />
 
-      <section aria-label="Meta diária" className="flex flex-col gap-2 rounded-lg border p-4">
-        <div className="flex items-baseline justify-between gap-2 text-sm">
-          <span className="font-medium">Meta diária</span>
-          <span className="tabular-nums" data-testid="daily-goal">
-            {touches} de {goal} toques
-          </span>
+      <section aria-label="Meta diária" className="lap-heroi flex flex-col gap-4 p-6">
+        <div className="relative z-10 flex items-baseline justify-between gap-2">
+          <span className="lap-rotulo">Meta diária</span>
+          <span className="lap-rotulo">{progress}% da meta</span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-valuenow={touches} aria-valuemax={goal}>
-          <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress}%` }} />
+        <span className="lap-numero relative z-10 text-5xl md:text-6xl" data-testid="daily-goal">
+          {touches}{" "}
+          <span className="text-xl font-normal text-muted-foreground md:text-2xl">
+            de {goal} toques
+          </span>
+        </span>
+        <div className="lap-trilho relative z-10" role="progressbar" aria-valuenow={touches} aria-valuemax={goal}>
+          <div className="lap-barra transition-all" style={{ width: `${progress}%` }} />
         </div>
       </section>
 
       {unassigned > 0 && (
-        <p className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <p className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 dark:border-amber-400/25 dark:bg-amber-400/10 dark:text-amber-200">
           {unassigned} lead(s) sem responsável.{" "}
           <Link href="/experts?responsavel=sem" className="font-medium underline">
             Distribuir

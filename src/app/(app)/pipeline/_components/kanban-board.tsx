@@ -102,7 +102,7 @@ function Column({ stage, cards }: { stage: StageOption; cards: PipelineCard[] })
       ref={setNodeRef}
       aria-label={`Etapa ${stage.name}`}
       className={cn(
-        "flex w-64 shrink-0 flex-col gap-2 rounded-xl bg-muted/50 p-2 transition-colors",
+        "flex w-64 shrink-0 flex-col gap-2 rounded-2xl border bg-white/[0.025] p-2 transition-colors",
         isOver && "bg-muted ring-2 ring-ring/40",
       )}
     >

@@ -60,10 +60,10 @@ async function DashboardContent({ searchParams }: Pick<PageProps<"/dashboard">, 
     >
       <div className="flex flex-col gap-6">
         <section aria-label="Resultado" className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_repeat(2,minmax(0,1fr))]">
-          <Card>
-            <CardContent className="flex flex-col gap-1">
-              <p className="text-sm text-muted-foreground">Valor de setup fechado</p>
-              <p className="font-sans text-5xl font-semibold" data-testid="setup-closed">
+          <Card className="lap-heroi">
+            <CardContent className="relative z-10 flex flex-col gap-2">
+              <p className="lap-rotulo">Valor de setup fechado</p>
+              <p className="lap-numero text-5xl md:text-6xl" data-testid="setup-closed">
                 {formatCurrency(data.setupClosed)}
               </p>
             </CardContent>
@@ -112,7 +112,7 @@ function StatTile({ label, value, detail }: { label: string; value: ReactNode; d
     <Card size="sm" role="group" aria-label={label}>
       <CardContent className="flex flex-col gap-1">
         <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-semibold" data-slot="stat-value">
+        <p className="lap-numero text-3xl" data-slot="stat-value">
           {value}
         </p>
         {detail && <p className="text-xs text-muted-foreground">{detail}</p>}

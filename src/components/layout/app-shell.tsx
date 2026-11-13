@@ -1,6 +1,6 @@
 "use client";
 
-import { MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon, XIcon } from "lucide-react";
+import { MenuIcon, PanelLeftCloseIcon, PanelLeftOpenIcon, SquareKanbanIcon, XIcon } from "lucide-react";
 import { Suspense, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -49,6 +49,17 @@ function useCollapsed() {
 // Esconde o elemento quando o menu está reduzido (só no computador).
 export const HIDE_WHEN_COLLAPSED = "md:group-data-[collapsed=true]/sidebar:hidden";
 
+function Brand({ className }: { className?: string }) {
+  return (
+    <span className={cn("flex items-center gap-2.5", className)}>
+      <span className="lap-logo" aria-hidden>
+        <SquareKanbanIcon className="size-3.5" strokeWidth={2.25} />
+      </span>
+      <span className={cn("font-heading text-[15px] font-medium tracking-tight", HIDE_WHEN_COLLAPSED)}>Central Comercial</span>
+    </span>
+  );
+}
+
 export function AppShell({ userCard, children }: { userCard: ReactNode; children: ReactNode }) {
   const [collapsed, toggleCollapsed] = useCollapsed();
   const [open, setOpen] = useState(false);
@@ -56,11 +67,11 @@ export function AppShell({ userCard, children }: { userCard: ReactNode; children
 
   return (
     <div className="flex flex-1 flex-col md:flex-row">
-      <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background px-4 md:hidden">
+      <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/90 px-4 backdrop-blur md:hidden">
         <Button variant="ghost" size="icon" onClick={() => setOpen(true)} aria-label="Abrir menu" aria-expanded={open}>
           <MenuIcon />
         </Button>
-        <p className="font-heading text-base font-semibold">Central Comercial</p>
+        <Brand />
       </header>
 
       {open && <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={close} aria-hidden />}
@@ -68,7 +79,7 @@ export function AppShell({ userCard, children }: { userCard: ReactNode; children
       <aside
         data-collapsed={collapsed}
         className={cn(
-          "group/sidebar flex flex-col gap-6 overflow-y-auto border-r bg-sidebar p-4 text-sidebar-foreground",
+          "group/sidebar flex flex-col gap-6 overflow-y-auto border-r bg-sidebar p-3 text-sidebar-foreground",
           // celular: gaveta por cima da página
           "fixed inset-y-0 left-0 z-50 w-64 transition-[transform,visibility] duration-200",
           // fechada, a gaveta também fica invisível (os links não entram no foco do teclado)
@@ -79,7 +90,7 @@ export function AppShell({ userCard, children }: { userCard: ReactNode; children
         )}
       >
         <div className={cn("flex items-center justify-between gap-2", collapsed && "md:justify-center")}>
-          <p className={cn("px-2 font-heading text-base font-semibold", HIDE_WHEN_COLLAPSED)}>Central Comercial</p>
+          <Brand className="px-1" />
           <Button
             variant="ghost"
             size="icon-sm"

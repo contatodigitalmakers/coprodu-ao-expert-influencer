@@ -159,6 +159,31 @@ etapa. Siga a ordem de implementação da seção 8.
 
 ## Decisões tomadas
 
+- **2026-11-13 — Visual escuro premium com verde (pedido do usuário, referência: Mestres CRM):**
+  - **Tema:** o sistema passou a ser só escuro. O `<html>` tem a classe `dark`, e a
+    paleta de `.dark` em `globals.css` usa fundo quase preto esverdeado e o
+    verde-limão como cor da marca (`--primary`, botão principal, foco, barras dos
+    gráficos e item ativo do menu).
+  - **A página pública da proposta (`/p/<token>`) continua clara**, porque é
+    impressa em PDF: ela fica dentro de `.light`, e o `dark:` do Tailwind ignora
+    o que estiver dentro de `.light`.
+  - **Acabamento** (classes `lap-` no fim de `globals.css`, da skill
+    lapidador-escuro-premium):
+    - `lap-cartao`: luz fina no topo e sombra; vai em todo `Card` e no card do kanban;
+    - `lap-heroi`: um por tela, com luz verde e grão. Está na "Meta diária" da
+      fila e no "Valor de setup fechado" do dashboard;
+    - `lap-titulo` (título grande e leve no `PageHeader`), `lap-numero`,
+      `lap-rotulo` (fonte mono), `lap-trilho`/`lap-barra` e `lap-logo`;
+    - a luz verde de fundo fica no `body`.
+  - **Menu:** logo em quadrado verde, item ativo levantado com o ícone verde e o
+    **Dashboard como primeiro item**. A tela inicial ("/") continua sendo a Fila
+    do dia.
+  - Nenhuma função, rota, id ou texto procurado pelos testes mudou.
+  - **Testes** contra o build de produção: `mobile` 17/17, `etapa5` 9/9, `etapa9`
+    6/6, `etapa10` 9/9, `etapa11` 7/7 e `analise` 6/6.
+  - Dado de teste com "Agenda" no nome (do `etapa9`) faz o `mobile` falhar no passo
+    "tocar fora fecha o menu", porque o card do quadro também conta como link
+    "Agenda". Rode o `cleanup.ts` antes do `mobile`.
 - **2026-11-06 — Sem gestão de usuários por enquanto.** Só os dois sócios usam
   o sistema. Não há convites, tela de usuários nem uso dos perfis SDR/Closer.
   Os logins são criados direto no painel do Supabase. O modelo de dados mantém
