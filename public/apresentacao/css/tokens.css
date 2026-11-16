@@ -1,0 +1,50 @@
+/* Digital Makerss — tokens da identidade (gerados a partir de tokens.json do design system NEXO) */
+:root {
+  color-scheme: dark;
+
+  /* Cores */
+  --bg: #050706;
+  --surface: #0a0f0c;
+  --surface-raised: #101814;
+  --surface-overlay: #16211b;
+  --line: #1f2b25;
+  --line-strong: #2c3b33;
+  --ink: #f2f7f4;
+  --ink-muted: #9aaba2;
+  --ink-subtle: #6e7f77;
+  --neon: #2bff88;
+  --neon-deep: #00c26a;
+  --neon-soft: #0e2a1c;
+  --neon-line: #1f6b45;
+  --neon-glow: rgba(43, 255, 136, 0.35);
+  --on-neon: #03140b;
+  --white: #ffffff;
+
+  /* Tipografia */
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  /* Espaçamento (base 8) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Raios */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 40px;
+  --radius-pill: 999px;
+
+  /* Sombras e brilhos */
+  --glow-sm: 0 0 16px rgba(43, 255, 136, 0.30);
+  --glow-lg: 0 0 40px rgba(43, 255, 136, 0.45), 0 0 0 1px rgba(43, 255, 136, 0.60);
+  --shadow-card: 0 24px 64px rgba(0, 0, 0, 0.60);
+}

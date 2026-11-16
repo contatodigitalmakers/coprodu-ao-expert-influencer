@@ -56,7 +56,7 @@ etapa. Siga a ordem de implementação da seção 8.
   - `catalog.ts`: cadastros e `settings`;
   - `experts.ts`: experts, tags e activities;
   - `cadences.ts`: cadências e tarefas;
-  - `deals.ts`: reuniões, propostas e projetos.
+  - `deals.ts`: reuniões, propostas, projetos e apresentações.
 - **Migrations** em `drizzle/`. Os dados iniciais (etapas, planos, nichos,
   templates etc.) ficam em `drizzle/0003_seed_defaults.sql`.
 - **Regras garantidas pelo próprio banco:**
@@ -213,6 +213,106 @@ etapa. Siga a ordem de implementação da seção 8.
   - Variável desconhecida bloqueia o salvamento.
   - Em templates de e-mail, "Assunto: ..." na primeira linha vira o assunto.
   - Exclusão lógica.
+- **2026-11-16 — Apresentações com link curto (pedido do usuário; veio do site
+  `ppt_influenciadores`, que foi apagado):**
+  - **O que é:**
+    - a apresentação da call de diagnóstico (22 slides) agora é a seção
+      "Apresentações";
+    - cada uma é ligada a um lead e fica salva;
+    - cada uma tem o link curto `/a/<código>`, que não muda ao editar.
+  - **Motor dos slides, sem build,** em `public/apresentacao/` (`css/`, `js/`,
+    `assets/`), copiado do site antigo. Ajustes:
+    - `params.js`:
+      - os campos `plano1_voce` … `plano3_caucao` substituem os planos do
+        `config.js`;
+      - `safeUrl` aceita `/apresentacao/assets/...`;
+    - `config.js`: vídeos em `/apresentacao/assets/cases/`;
+    - `deck.js`:
+      - com `window.DM_DADOS` (link curto), usa os dados salvos e da URL só
+        `modo` e `rascunho`;
+      - sem ele (prévia), lê `?d=`.
+  - **HTML:** único modelo em `src/lib/presentations/deck-html.ts`, onde se
+    editam os textos fixos dos slides.
+    - Os caminhos são absolutos, porque `<base>` quebraria os ícones
+      `<use href="#...">` e o `#/NN`.
+    - Mudou um CSS ou JS? Troque o `VERSION` desse arquivo.
+  - **Campos:** `src/lib/presentations/fields.ts` é uma cópia do `FIELDS` de
+    `params.js`. Mudar um exige mudar o outro.
+  - **Planos (decisão do usuário):**
+    - vêm dos 3 primeiros planos ativos de Configurações (por valor de setup);
+    - são editáveis em cada apresentação;
+    - o que faltar usa os de `config.js`;
+    - ficam congelados no `data` da apresentação.
+  - **Formulário já preenchido** com:
+    - nome do lead (menos o provisório `@handle`), nicho, seguidores e rede;
+    - produtos e audiência do diagnóstico;
+    - data da próxima reunião ou, sem ela, da última;
+    - o usuário logado em "Seu nome";
+    - o plano de interesse do diagnóstico em destaque.
+  - **Banco:**
+    - **tabela `presentations`:**
+      - `code` único de 8 caracteres, sem 0/o/1/i/l (~850 bilhões de
+        combinações, para não dar para adivinhar o link de outra pessoa; o
+        plano previa 6);
+      - `data` (jsonb), `views` e `last_viewed_at`;
+      - exclusão lógica, sem política de delete;
+    - **acesso público:** só pela função `get_public_presentation(code,
+      register_view)`, `security definer` (migration 0012), que é a única porta
+      do anon;
+    - **linha do tempo:** criar e excluir gravam uma nota.
+  - **Rotas (route handlers):**
+    - `/a/[code]`, público:
+      - devolve o HTML com os dados, com `no-store`, `noindex` e
+        `X-Frame-Options: DENY`;
+      - código que não existe ou foi excluído responde 404;
+      - com `?modo=apresentador`, não conta abertura;
+    - `/apresentacoes/previa`, com login:
+      - modelo sem dados, para o iframe do gerador;
+      - o `next.config.ts` libera iframe só do próprio CRM nesse caminho;
+    - o proxy libera `/a/` e não roda em `/apresentacao/`.
+  - **Gerador:**
+    - saíram "Preencher exemplo", o formato legível e o rascunho no
+      `localStorage`;
+    - entrou "Carregar de um link antigo" (`?d=`), para trazer as
+      apresentações já enviadas.
+  - **Testes:**
+    - `tests/db/apresentacoes.ts`: a parte sem banco roda sem `.env.local`;
+    - `tests/e2e/apresentacoes.ts`;
+    - `etapa12` atualizado: 19 tabelas e a nova função pública.
+  - **Conferido sem banco:** o HTML gerado foi servido localmente e testado no
+    Chrome:
+    - dados, planos editados e slides ocultos;
+    - teclado, visão geral, apresentador e calculadora;
+    - vídeos tocando e modo celular (390 px) sem erro de JS.
+  - **Vídeos na prévia:** com `modo=previa`, os vídeos usam `preload="none"` e
+    só baixam ao chegar no slide (`render.js` e `syncVideos` do `deck.js`).
+    - A prévia é recarregada a cada edição e aparece na página de cada
+      apresentação, então baixaria os ~24 MB toda vez.
+    - O link curto continua com `preload="auto"`.
+  - **Busca da lista:** acha o nome e o @ do lead e também o nome usado na
+    apresentação (`data->>'expert'`).
+  - **Migration e testes (2026-11-16):**
+    - 0011 e 0012 aplicadas no Supabase; o banco ficou com 13 migrations e os
+      41 leads intactos;
+    - `tests/db/apresentacoes.ts`: 23/23;
+    - `tests/db/etapa12.ts`: 13/13, com 19 tabelas;
+    - `tests/e2e/apresentacoes.ts`: 11/11 no `next start` e 11/11 no
+      `npm run preview` (runtime da Cloudflare);
+    - `tests/e2e/mobile.ts`: 19/19;
+    - a senha do banco não aparece no `.open-next`;
+    - o servidor comprimido tem ~1,9 MiB.
+    - O `cleanup.ts` não foi rodado, porque reseta a etapa "Qualificado"; o
+      teste das apresentações apaga o próprio lead.
+  - **Publicado em 2026-11-16** (versão `563b67f2`):
+    - `tests/e2e/apresentacoes.ts` deu 11/11 no endereço publicado;
+    - logo depois do deploy, alguns caminhos ainda responderam pela versão
+      antiga por alguns segundos (link curto e `deck.js` redirecionando para o
+      login), e na segunda rodada já estava certo.
+  - **Login do wrangler neste Mac:** use `npx wrangler login --device`.
+    - Sem `--device`, o navegador volta para `localhost:8976` levando os
+      cookies de todos os `localhost`, e o wrangler responde HTTP 431
+      (cabeçalho grande demais).
+    - Cada login aberto também só aceita a aba que ele mesmo abriu.
 - **2026-11-10 — Versão para celular e menu reduzível (pedido do usuário):**
   - **Menu** (`src/components/layout/app-shell.tsx`, que o `layout.tsx` da área
     logada usa):
@@ -576,3 +676,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - Extra: pesquisa de experts com `/pesquisa` (Fase 1 e piloto de 10 leads em
   2026-11-09; rodada noturna pendente).
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).
+- Extra: apresentações personalizadas com link curto (2026-11-16; migration
+  aplicada, testes passando e publicado na Cloudflare).

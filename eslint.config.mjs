@@ -23,6 +23,8 @@ const eslintConfig = defineConfig([
     // Build e cache local da Cloudflare.
     ".open-next/**",
     ".wrangler/**",
+    // Motor da apresentação (JS puro, sem build), servido como está.
+    "public/apresentacao/**",
   ]),
 ]);
 

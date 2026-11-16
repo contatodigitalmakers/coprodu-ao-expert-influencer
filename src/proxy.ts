@@ -6,6 +6,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Roda em todas as rotas, exceto arquivos estáticos e imagens.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // Roda em todas as rotas, exceto arquivos estáticos, imagens e os arquivos da
+  // apresentação (public/apresentacao), que o link curto abre sem login.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|apresentacao/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

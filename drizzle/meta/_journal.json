@@ -78,6 +78,20 @@
       "when": 1794014409320,
       "tag": "0010_proposals_public",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1794843907005,
+      "tag": "0011_presentations",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1794843911946,
+      "tag": "0012_presentations_public",
+      "breakpoints": true
     }
   ]
 }

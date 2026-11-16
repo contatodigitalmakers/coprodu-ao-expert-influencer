@@ -1,5 +1,5 @@
 // Apaga os dados criados pelos testes (leads de teste, suas atividades,
-// tarefas, reuniões, propostas, projetos e as tags/nicho de teste).
+// tarefas, reuniões, propostas, apresentações, projetos e as tags/nicho de teste).
 // Uso: npx tsx --env-file=.env.local tests/e2e/cleanup.ts
 import postgres from "postgres";
 
@@ -16,6 +16,7 @@ async function main() {
         where handle like any(${TEST_HANDLES}) or name like '% E2E%'`;
       const ids = experts.map((row) => row.id);
       if (ids.length) {
+        await tx`delete from public.presentations where expert_id = any(${ids})`;
         await tx`delete from public.projects where expert_id = any(${ids})`;
         await tx`delete from public.proposals where expert_id = any(${ids})`;
         await tx`delete from public.meetings where expert_id = any(${ids})`;

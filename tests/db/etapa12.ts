@@ -2,8 +2,8 @@
 // Uso: npx tsx --env-file=.env.local tests/db/etapa12.ts
 import postgres from "postgres";
 
-const PUBLIC_FUNCTIONS = ["get_public_proposal", "respond_to_proposal"]; // as únicas abertas ao anon
-const NO_DELETE = ["activities", "experts", "projects", "proposals", "settings", "templates", "users"];
+const PUBLIC_FUNCTIONS = ["get_public_presentation", "get_public_proposal", "respond_to_proposal"]; // as únicas abertas ao anon
+const NO_DELETE = ["activities", "experts", "presentations", "projects", "proposals", "settings", "templates", "users"];
 
 async function main() {
   const results: { name: string; pass: boolean; detail: string }[] = [];
@@ -36,9 +36,9 @@ async function main() {
     // Funções de gatilho (returns trigger) não podem ser chamadas diretamente, mesmo com EXECUTE.
     const triggerFns = (await sql`select p.proname as name from pg_proc p where p.pronamespace = 'public'::regnamespace and p.prorettype = 'trigger'::regtype`).map((row) => row.name);
     const unexpected = anonFunctions.filter((name) => !PUBLIC_FUNCTIONS.includes(name) && !triggerFns.includes(name));
-    check("Anon só executa as funções da proposta pública", unexpected.length === 0, unexpected.join(", "));
+    check("Anon só executa as funções da proposta e da apresentação públicas", unexpected.length === 0, unexpected.join(", "));
     const definers = functions.filter((fn) => fn.definer).map((fn) => fn.name).sort();
-    check("Funções security definer conhecidas", definers.join(",") === "get_public_proposal,handle_new_auth_user,is_admin,respond_to_proposal", definers.join(","));
+    check("Funções security definer conhecidas", definers.join(",") === "get_public_presentation,get_public_proposal,handle_new_auth_user,is_admin,respond_to_proposal", definers.join(","));
     const newUserFn = functions.find((fn) => fn.name === "handle_new_auth_user");
     check("Função do gatilho de login não é executável por anon/authenticated", Boolean(newUserFn && !newUserFn.anon_exec && !newUserFn.auth_exec));
 
@@ -50,14 +50,14 @@ async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
   const headers = { apikey: key, "content-type": "application/json" };
-  const tables = ["users", "niches", "tags", "stages", "loss_reasons", "plans", "templates", "settings", "experts", "expert_tags", "activities", "cadences", "cadence_steps", "cadence_enrollments", "tasks", "meetings", "proposals", "projects"];
+  const tables = ["users", "niches", "tags", "stages", "loss_reasons", "plans", "templates", "settings", "experts", "expert_tags", "activities", "cadences", "cadence_steps", "cadence_enrollments", "tasks", "meetings", "proposals", "projects", "presentations"];
   const exposed: string[] = [];
   for (const table of tables) {
     const response = await fetch(`${url}/rest/v1/${table}?select=*&limit=1`, { headers });
     const body = await response.json();
     if (Array.isArray(body) && body.length > 0) exposed.push(table);
   }
-  check("API pública não devolve linha de nenhuma das 18 tabelas", exposed.length === 0, exposed.join(", "));
+  check(`API pública não devolve linha de nenhuma das ${tables.length} tabelas`, exposed.length === 0, exposed.join(", "));
 
   const write = await fetch(`${url}/rest/v1/niches`, { method: "POST", headers, body: JSON.stringify({ name: "Invasor" }) });
   check("API pública não consegue gravar", write.status >= 400, `status ${write.status}`);

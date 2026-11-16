@@ -2,7 +2,8 @@
 
 Sistema interno para prospectar experts e vender co-produção de apps: experts,
 score de qualificação, pipeline, cadências, fila do dia do SDR, templates,
-agenda de diagnóstico, propostas com página pública e dashboard.
+agenda de diagnóstico, apresentações com link curto, propostas com página
+pública e dashboard.
 
 Escopo completo em [docs/escopo.md](docs/escopo.md). As regras do projeto, as
 decisões tomadas e a arquitetura estão em [CLAUDE.md](CLAUDE.md).
@@ -180,6 +181,81 @@ Para um perfil que você encontrou por conta própria:
 
 Por baixo, o comando chama `npm run analisar-pendentes` e
 `npm run analisar-salvar -- tmp/pesquisa/analise-<data>.json [--simular]`.
+
+## Apresentações (link curto)
+
+É a apresentação da call de diagnóstico: 22 slides com os dados de cada lead.
+Cada apresentação fica salva no CRM e tem um link curto, `/a/<código>`, para
+enviar ao lead.
+
+**Como usar:**
+
+1. Na ficha do lead, clique em **Nova apresentação**. Também dá para ir em
+   **Apresentações → Nova apresentação** e buscar o lead.
+2. O formulário já vem preenchido com:
+   - nome, nicho, seguidores e rede do lead;
+   - o que o diagnóstico registrou (produtos, audiência e plano de interesse);
+   - a data da reunião;
+   - o seu nome;
+   - os 3 planos de Configurações.
+
+   Complete o resto (a dor, o objetivo e as funcionalidades do app, por
+   exemplo). A prévia ao lado atualiza enquanto você digita. "Mostrar campos
+   vazios" destaca o que falta.
+3. **Salvar e gerar link**. Depois, **Copiar link** ou **Enviar no WhatsApp do
+   lead**.
+
+**Regras:**
+
+- **Editar** não muda o link: quem já recebeu vê a versão nova.
+- **Excluir** desativa o link, que passa a mostrar "Apresentação não
+  encontrada".
+- **Aberturas:** a tela da apresentação mostra quantas vezes o link foi aberto
+  e quando foi a última. Isso inclui quando você mesmo abre na call. A janela do
+  apresentador não conta.
+- **Planos:** cada apresentação pode ter valores próprios (% do expert e
+  caução). Os valores ficam gravados nela, e mudar os planos em Configurações
+  não altera as apresentações já feitas.
+- **Campos vazios** nunca aparecem como `[__]`: a frase muda, a linha some ou o
+  slide inteiro some.
+- **Links do site antigo:** use "Carregar de um link antigo" no formulário para
+  trazer os dados de um link `?d=...` já enviado.
+
+**Atalhos durante a apresentação:**
+
+| Tecla | Ação |
+|---|---|
+| `→` `espaço` `PageDown` | próximo slide |
+| `←` `PageUp` | slide anterior |
+| `Home` / `End` | primeiro / último |
+| `F` | tela cheia |
+| `O` | visão geral com todos os slides (`Esc` fecha) |
+| `P` | janela do apresentador: próximo slide, notas e cronômetro de 40 min |
+
+As duas janelas ficam sincronizadas. Na call, compartilhe só a aba da
+apresentação. No celular, a apresentação vira uma página de rolagem. Para o
+PDF, use `Ctrl/Cmd + P` → "Salvar como PDF".
+
+**Onde mudar as coisas:**
+
+- **Textos fixos e notas dos slides:**
+  [src/lib/presentations/deck-html.ts](src/lib/presentations/deck-html.ts). Cada
+  slide é um `<section data-slide="N">`, e as notas ficam no
+  `<aside class="notes">`.
+- **Padrões e prova social:**
+  [public/apresentacao/js/config.js](public/apresentacao/js/config.js). É onde
+  ficam empresa, seu WhatsApp e @, a mensagem pronta, o faturamento de 2026 e as
+  listas `cases`, `prints` e `videos` (lista vazia = o slide some). Os arquivos
+  ficam em `public/apresentacao/assets/cases/`.
+- **Depois de mudar um CSS ou JS** de `public/apresentacao/`, troque o
+  `VERSION` em `deck-html.ts`, para o navegador não usar a versão antiga.
+- **Campo novo no formulário:** entra em
+  [src/lib/presentations/fields.ts](src/lib/presentations/fields.ts) e em
+  `public/apresentacao/js/params.js`, que precisam ficar iguais.
+
+**Privacidade:** a página tem `noindex` e não pode ser embutida em outro site.
+Quem tem o link vê a apresentação, então não publique links em lugares
+abertos.
 
 ## Testes
 
