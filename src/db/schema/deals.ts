@@ -12,7 +12,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 import { plans } from "./catalog";
-import { authenticatedCan, id, timestamps } from "./common";
+import { authenticatedCan, deletedAt, id, timestamps } from "./common";
 import { meetingStatus, projectStatus, proposalStatus } from "./enums";
 import { experts } from "./experts";
 import { users } from "./users";
@@ -108,4 +108,31 @@ export const projects = pgTable(
     ...timestamps,
   },
   () => [...authenticatedCan("select", "insert", "update")],
+);
+
+// Apresentação personalizada para a call de diagnóstico (slides em
+// public/apresentacao). O lead recebe o link curto /a/<code>.
+export const presentations = pgTable(
+  "presentations",
+  {
+    id: id(),
+    expertId: uuid("expert_id")
+      .notNull()
+      .references(() => experts.id),
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }), // quem criou
+    code: text("code").notNull().unique(), // código do link curto
+    // Campos do gerador (chave → texto), congelados ao salvar: dados do cliente,
+    // planos (plano1_voce, plano1_caucao...) e slides ocultos (ocultar).
+    data: jsonb("data").$type<Record<string, string>>().notNull().default({}),
+    views: integer("views").notNull().default(0), // aberturas do link
+    lastViewedAt: timestamp("last_viewed_at", { withTimezone: true }),
+    deletedAt: deletedAt(), // excluída = link desativado
+    ...timestamps,
+  },
+  (t) => [
+    check("presentations_code_format", sql`${t.code} ~ '^[a-z0-9]{6,12}$'`),
+    index("presentations_expert_id_idx").on(t.expertId),
+    // Sem "delete": exclusão lógica, para o histórico do lead.
+    ...authenticatedCan("select", "insert", "update"),
+  ],
 );

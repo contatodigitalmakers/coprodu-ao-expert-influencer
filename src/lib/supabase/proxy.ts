@@ -1,8 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Páginas abertas sem login: login e proposta pública (/p/<token>).
-const isPublic = (pathname: string) => pathname === "/login" || pathname.startsWith("/p/");
+// Páginas abertas sem login: login, proposta pública (/p/<token>) e link curto
+// da apresentação (/a/<código>).
+const isPublic = (pathname: string) => pathname === "/login" || pathname.startsWith("/p/") || pathname.startsWith("/a/");
 
 // Roda antes de cada página: renova a sessão do Supabase (cookies) e faz o
 // redirecionamento rápido de quem não está logado. A checagem definitiva fica

@@ -27,6 +27,7 @@ import { getExpert, getTimeline, type ExpertDetail, type TimelineItem } from "@/
 import { daysSince, getStageOptions } from "@/lib/pipeline/queries";
 import { getActiveCadenceOptions, getExpertCadence } from "@/lib/cadences/queries";
 import { getExpertMeetings } from "@/lib/meetings/queries";
+import { getExpertPresentations } from "@/lib/presentations/queries";
 import { getExpertProposals } from "@/lib/proposals/queries";
 import { getFormOptions } from "@/lib/experts/queries";
 import { formatDateTime, formatFollowers, formatPercent, formatWhatsapp, plural, todayInSaoPaulo } from "@/lib/format";
@@ -37,6 +38,7 @@ import { ScoreBadge, TagBadge } from "../_components/badges";
 import { ActivityForm } from "./activity-form";
 import { CadenceCard } from "./cadence-card";
 import { MeetingsCard } from "./meetings-card";
+import { PresentationsCard } from "./presentations-card";
 import { ProposalsCard } from "./proposals-card";
 import { ConfirmDeleteButton } from "@/components/confirm-delete-button";
 import { StageMoveControl } from "../../pipeline/_components/stage-move-control";
@@ -55,7 +57,7 @@ export default function ExpertPage({ params }: PageProps<"/experts/[id]">) {
 
 async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "params">) {
   const { id } = await params;
-  const [expert, timeline, user, stageOptions, cadence, cadenceOptions, meetings, formOptions, proposals] = await Promise.all([
+  const [expert, timeline, user, stageOptions, cadence, cadenceOptions, meetings, formOptions, proposals, presentations] = await Promise.all([
     getExpert(id),
     getTimeline(id),
     getCurrentUser(),
@@ -65,6 +67,7 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
     getExpertMeetings(id),
     getFormOptions(),
     getExpertProposals(id),
+    getExpertPresentations(id),
   ]);
   if (!expert) notFound();
 
@@ -145,6 +148,7 @@ async function ExpertProfile({ params }: Pick<PageProps<"/experts/[id]">, "param
             currentUserId={user.id}
             today={todayInSaoPaulo()}
           />
+          <PresentationsCard expertId={expert.id} presentations={presentations} />
           <ProposalsCard expertId={expert.id} proposals={proposals} />
           <ExpertInfo expert={expert} />
         </div>

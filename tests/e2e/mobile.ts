@@ -20,7 +20,7 @@ async function main() {
 
   try {
     await login(page);
-    const routes = ["/", "/experts", "/experts/novo", "/experts/importar", "/pipeline", "/agenda", "/propostas", "/propostas/nova", "/cadencias", "/templates", "/templates/novo", "/dashboard", "/configuracoes"];
+    const routes = ["/", "/experts", "/experts/novo", "/experts/importar", "/pipeline", "/agenda", "/propostas", "/propostas/nova", "/apresentacoes", "/apresentacoes/nova", "/cadencias", "/templates", "/templates/novo", "/dashboard", "/configuracoes"];
     for (const route of routes) {
       await step(page, `Celular ${route}: sem rolagem horizontal`, async () => {
         await open(page, `${BASE_URL}${route}`);
