@@ -253,9 +253,27 @@ etapa. Siga a ordem de implementação da seção 8.
     - dados, planos editados e slides ocultos;
     - teclado, visão geral, apresentador e calculadora;
     - vídeos tocando e modo celular (390 px) sem erro de JS.
-  - **Pendente:** `npm run db:migrate`, `tests/db/apresentacoes.ts` com banco,
-    `tests/db/etapa12.ts`, `tests/e2e/apresentacoes.ts` e o deploy. Esta pasta
-    não tinha `.env.local`.
+  - **Vídeos na prévia:** com `modo=previa`, os vídeos usam `preload="none"` e
+    só baixam ao chegar no slide (`render.js` e `syncVideos` do `deck.js`).
+    - A prévia é recarregada a cada edição e aparece na página de cada
+      apresentação, então baixaria os ~24 MB toda vez.
+    - O link curto continua com `preload="auto"`.
+  - **Busca da lista:** acha o nome e o @ do lead e também o nome usado na
+    apresentação (`data->>'expert'`).
+  - **Migration e testes (2026-11-16):**
+    - 0011 e 0012 aplicadas no Supabase; o banco ficou com 13 migrations e os
+      41 leads intactos;
+    - `tests/db/apresentacoes.ts`: 23/23;
+    - `tests/db/etapa12.ts`: 13/13, com 19 tabelas;
+    - `tests/e2e/apresentacoes.ts`: 11/11 no `next start` e 11/11 no
+      `npm run preview` (runtime da Cloudflare);
+    - `tests/e2e/mobile.ts`: 19/19;
+    - a senha do banco não aparece no `.open-next`;
+    - o servidor comprimido tem ~1,9 MiB.
+    - O `cleanup.ts` não foi rodado, porque reseta a etapa "Qualificado"; o
+      teste das apresentações apaga o próprio lead.
+  - **Pendente:** o deploy (`npm run deploy`, que precisa de `npx wrangler
+    login`).
 - **2026-11-10 — Versão para celular e menu reduzível (pedido do usuário):**
   - **Menu** (`src/components/layout/app-shell.tsx`, que o `layout.tsx` da área
     logada usa):
@@ -615,5 +633,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - Extra: pesquisa de experts com `/pesquisa` (Fase 1 e piloto de 10 leads em
   2026-11-09; rodada noturna pendente).
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).
-- Extra: apresentações personalizadas com link curto (2026-11-16; migration e
-  testes com banco pendentes até haver `.env.local`).
+- Extra: apresentações personalizadas com link curto (2026-11-16; migration
+  aplicada e testes passando; deploy pendente).

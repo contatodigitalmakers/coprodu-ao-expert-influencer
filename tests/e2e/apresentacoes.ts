@@ -56,7 +56,7 @@ async function main() {
       await page.locator("#f-plano1_caucao").fill("4500");
       await page.getByRole("button", { name: "Salvar e gerar link" }).click();
       await page.waitForURL(/\/apresentacoes\/[0-9a-f-]{36}$/);
-      await page.waitForLoadState("networkidle");
+      await page.getByTestId("short-link").getByText("/a/").waitFor();
       detailUrl = page.url();
       const saved = await row();
       expect(/^[a-z0-9]{8}$/.test(saved.code), `código: ${saved.code}`);
@@ -87,6 +87,17 @@ async function main() {
       expect(saved.views === 1, `aberturas: ${saved.views} (a janela do apresentador não conta)`);
     });
 
+    await step(page, "Prévia: vídeos só baixam ao chegar no slide deles", async () => {
+      await page.goto(`${BASE_URL}/apresentacoes/previa?modo=previa#/01`);
+      await page.locator('[data-slide="1"].is-active').waitFor();
+      const idle = await page.locator('[data-slide="13"] video').evaluateAll((videos) => videos.map((v) => (v as HTMLVideoElement).readyState));
+      expect(idle.length === 3 && idle.every((state) => state === 0), `no slide 1: ${idle}`);
+      await page.goto(`${BASE_URL}/apresentacoes/previa?modo=previa#/13`);
+      await page.waitForFunction(() =>
+        [...document.querySelectorAll('[data-slide="13"] video')].every((v) => !(v as HTMLVideoElement).paused && (v as HTMLVideoElement).readyState >= 2),
+      );
+    });
+
     await step(page, "Prévia só abre dentro do CRM", async () => {
       const response = await page.request.get(`${BASE_URL}/apresentacoes/previa`);
       expect(response.headers()["x-frame-options"] === "SAMEORIGIN", `x-frame-options: ${response.headers()["x-frame-options"]}`);
@@ -115,8 +126,11 @@ async function main() {
       await open(page, `/experts/${lead.id}`);
       await page.getByRole("list", { name: "Apresentações do lead" }).getByText("1 abertura").waitFor();
       await page.getByText(/Apresentação criada \(link \/a\//).filter(visible).waitFor();
+      // A lista mostra o nome do lead; a busca também acha o nome usado na apresentação.
       await open(page, "/apresentacoes?busca=Ana Prévia");
-      await page.getByRole("link", { name: "Ana Prévia E2E" }).filter(visible).waitFor();
+      await page.getByRole("link", { name: "Apresentação UI E2E" }).filter(visible).waitFor();
+      await open(page, "/apresentacoes?busca=e2e.apresentacaoui");
+      await page.getByRole("link", { name: "Apresentação UI E2E" }).filter(visible).waitFor();
     });
 
     await step(page, "Excluir desativa o link", async () => {

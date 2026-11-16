@@ -8,7 +8,7 @@
 
 const ASSETS = "/apresentacao";
 // Troque ao mudar um CSS ou JS de public/apresentacao, para o navegador não usar o antigo.
-const VERSION = "crm1";
+const VERSION = "crm2";
 
 export type DeckData = Record<string, string>;
 

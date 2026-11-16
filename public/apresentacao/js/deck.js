@@ -139,7 +139,7 @@
           v.removeEventListener('loadeddata', once);
           kick();
         });
-        if (v.networkState === 0) v.load();
+        if (v.networkState === 0 || v.preload === 'none') { v.preload = 'auto'; v.load(); }
       }
     });
   }

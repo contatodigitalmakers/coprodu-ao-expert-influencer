@@ -26,7 +26,8 @@ const presentationFields = {
   createdByName: users.name,
 };
 
-// Lista da seção Apresentações, da mais nova para a mais antiga.
+// Lista da seção Apresentações, da mais nova para a mais antiga. A busca
+// acha o nome ou @ do lead e também o nome usado na apresentação.
 export async function listPresentations(search: string) {
   const term = search.trim();
   return queryAsUser((tx) =>
@@ -39,7 +40,13 @@ export async function listPresentations(search: string) {
         and(
           isNull(presentations.deletedAt),
           isNull(experts.deletedAt),
-          term ? or(ilike(experts.name, `%${term}%`), ilike(experts.handle, `%${term.replace(/^@/, "")}%`)) : undefined,
+          term
+            ? or(
+                ilike(experts.name, `%${term}%`),
+                ilike(experts.handle, `%${term.replace(/^@/, "")}%`),
+                ilike(sql`${presentations.data}->>'expert'`, `%${term}%`),
+              )
+            : undefined,
         ),
       )
       .orderBy(desc(presentations.createdAt))

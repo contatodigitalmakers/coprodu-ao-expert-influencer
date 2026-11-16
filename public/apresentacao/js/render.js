@@ -324,7 +324,8 @@
             playsinline: '',
             muted: '',
             loop: '',
-            preload: 'auto',
+            // Na prévia do CRM (recarregada a cada edição), o vídeo só baixa ao chegar no slide.
+            preload: data.flags.modo === 'previa' ? 'none' : 'auto',
             src: item.src
           });
           media.muted = true;
