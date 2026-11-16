@@ -272,8 +272,16 @@ etapa. Siga a ordem de implementação da seção 8.
     - o servidor comprimido tem ~1,9 MiB.
     - O `cleanup.ts` não foi rodado, porque reseta a etapa "Qualificado"; o
       teste das apresentações apaga o próprio lead.
-  - **Pendente:** o deploy (`npm run deploy`, que precisa de `npx wrangler
-    login`).
+  - **Publicado em 2026-11-16** (versão `563b67f2`):
+    - `tests/e2e/apresentacoes.ts` deu 11/11 no endereço publicado;
+    - logo depois do deploy, alguns caminhos ainda responderam pela versão
+      antiga por alguns segundos (link curto e `deck.js` redirecionando para o
+      login), e na segunda rodada já estava certo.
+  - **Login do wrangler neste Mac:** use `npx wrangler login --device`.
+    - Sem `--device`, o navegador volta para `localhost:8976` levando os
+      cookies de todos os `localhost`, e o wrangler responde HTTP 431
+      (cabeçalho grande demais).
+    - Cada login aberto também só aceita a aba que ele mesmo abriu.
 - **2026-11-10 — Versão para celular e menu reduzível (pedido do usuário):**
   - **Menu** (`src/components/layout/app-shell.tsx`, que o `layout.tsx` da área
     logada usa):
@@ -634,4 +642,4 @@ etapa. Siga a ordem de implementação da seção 8.
   2026-11-09; rodada noturna pendente).
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).
 - Extra: apresentações personalizadas com link curto (2026-11-16; migration
-  aplicada e testes passando; deploy pendente).
+  aplicada, testes passando e publicado na Cloudflare).
