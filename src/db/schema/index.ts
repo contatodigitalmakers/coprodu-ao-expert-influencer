@@ -4,3 +4,4 @@ export * from "./catalog";
 export * from "./experts";
 export * from "./cadences";
 export * from "./deals";
+export * from "./finance";

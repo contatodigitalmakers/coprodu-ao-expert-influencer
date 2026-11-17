@@ -59,6 +59,37 @@ export const proposalStatus = pgEnum("proposal_status", [
 // Por enquanto só o status inicial; as etapas de entrega vêm na Fase 3.
 export const projectStatus = pgEnum("project_status", ["awaiting_kickoff"]);
 
+// Central Financeira: status do app em coprodução (os da planilha de controle).
+export const appStatus = pgEnum("app_status", [
+  "prospecting",
+  "negotiating",
+  "contract_signed",
+  "in_development",
+  "beta",
+  "launching",
+  "operating",
+  "paused",
+  "closed",
+]);
+
+// Central Financeira: categorias de custo. O grupo (do app, da empresa ou
+// imposto) fica em src/lib/finance/labels.ts. paid_traffic, ai_app e
+// ai_development entram nos cálculos de CPA, ROAS e gasto com IA.
+export const costCategory = pgEnum("cost_category", [
+  "paid_traffic",
+  "ai_app",
+  "infrastructure",
+  "sales_tools",
+  "app_freelancers",
+  "app_other",
+  "ai_development",
+  "software",
+  "people",
+  "services",
+  "taxes",
+  "company_other",
+]);
+
 export type Platform = (typeof platform.enumValues)[number];
 export type ScoreTier = (typeof scoreTier.enumValues)[number];
 export type ActivityType = (typeof activityType.enumValues)[number];
@@ -68,3 +99,5 @@ export type TaskOutcome = (typeof taskOutcome.enumValues)[number];
 export type EnrollmentStatus = (typeof enrollmentStatus.enumValues)[number];
 export type MeetingStatus = (typeof meetingStatus.enumValues)[number];
 export type ProposalStatus = (typeof proposalStatus.enumValues)[number];
+export type AppStatus = (typeof appStatus.enumValues)[number];
+export type CostCategory = (typeof costCategory.enumValues)[number];

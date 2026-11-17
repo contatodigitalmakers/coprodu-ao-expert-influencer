@@ -3,7 +3,7 @@
 import postgres from "postgres";
 
 const PUBLIC_FUNCTIONS = ["get_public_presentation", "get_public_proposal", "respond_to_proposal"]; // as únicas abertas ao anon
-const NO_DELETE = ["activities", "experts", "presentations", "projects", "proposals", "settings", "templates", "users"];
+const NO_DELETE = ["activities", "app_sales", "apps", "costs", "experts", "presentations", "projects", "proposals", "settings", "templates", "users"];
 
 async function main() {
   const results: { name: string; pass: boolean; detail: string }[] = [];
@@ -50,7 +50,7 @@ async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
   const headers = { apikey: key, "content-type": "application/json" };
-  const tables = ["users", "niches", "tags", "stages", "loss_reasons", "plans", "templates", "settings", "experts", "expert_tags", "activities", "cadences", "cadence_steps", "cadence_enrollments", "tasks", "meetings", "proposals", "projects", "presentations"];
+  const tables = ["users", "niches", "tags", "stages", "loss_reasons", "plans", "templates", "settings", "experts", "expert_tags", "activities", "cadences", "cadence_steps", "cadence_enrollments", "tasks", "meetings", "proposals", "projects", "presentations", "apps", "app_sales", "costs"];
   const exposed: string[] = [];
   for (const table of tables) {
     const response = await fetch(`${url}/rest/v1/${table}?select=*&limit=1`, { headers });

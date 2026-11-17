@@ -32,3 +32,17 @@ export function authenticatedCan(...operations: Operation[]) {
     }),
   );
 }
+
+// Políticas só para o Admin (função is_admin, migration 0008). Usadas na
+// Central Financeira: o escopo pede que o SDR não veja o financeiro.
+export function adminCan(...operations: Operation[]) {
+  const isAdmin = sql`(select public.is_admin())`;
+  return operations.map((operation) =>
+    pgPolicy(`admin_can_${operation}`, {
+      for: operation,
+      to: authenticatedRole,
+      using: operation === "insert" ? undefined : isAdmin,
+      withCheck: operation === "insert" || operation === "update" ? isAdmin : undefined,
+    }),
+  );
+}

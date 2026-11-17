@@ -56,7 +56,8 @@ etapa. Siga a ordem de implementação da seção 8.
   - `catalog.ts`: cadastros e `settings`;
   - `experts.ts`: experts, tags e activities;
   - `cadences.ts`: cadências e tarefas;
-  - `deals.ts`: reuniões, propostas, projetos e apresentações.
+  - `deals.ts`: reuniões, propostas, projetos e apresentações;
+  - `finance.ts`: Central Financeira (apps, vendas do mês e custos).
 - **Migrations** em `drizzle/`. Os dados iniciais (etapas, planos, nichos,
   templates etc.) ficam em `drizzle/0003_seed_defaults.sql`.
 - **Regras garantidas pelo próprio banco:**
@@ -159,6 +160,91 @@ etapa. Siga a ordem de implementação da seção 8.
 
 ## Decisões tomadas
 
+- **2026-11-17 — Central Financeira (pedido do usuário; veio da planilha
+  `Controle_Apps_Coproducao.xlsx`, que ficou fora do Git):**
+  - **O que é:** controle financeiro dos apps em coprodução, num grupo novo do
+    menu ("Central Financeira", abaixo dos itens da Central Comercial):
+    - **Resumo** (`/financeiro`): a aba "Resumo por App";
+    - **Mês a mês** (`/financeiro/mensal`): a aba "Resumo Mensal";
+    - **Apps**, **Vendas** e **Custos**: as abas de lançamento.
+  - **Restrição do usuário: nada do que existia mudou.** Só entraram tabelas,
+    páginas e arquivos novos. As únicas mudanças em arquivos existentes foram:
+    - o grupo novo no menu (`sidebar-nav.tsx`);
+    - `adminCan()` em `common.ts`;
+    - os enums novos;
+    - os testes `etapa12` e `mobile`;
+    - a documentação.
+  - **Decisões do usuário:**
+    - a divisão é o **% fixo do app** desde a primeira venda, como na planilha.
+      A regra do escopo "100% para o expert até recuperar o setup" (seção 3.8)
+      **não** vale aqui;
+    - as categorias de custo e os status do app são **listas fixas** (enums
+      `cost_category` e `app_status`, textos em `src/lib/finance/labels.ts`).
+  - **Banco** (migration 0013, só criação):
+    - **tabelas:**
+      - `apps`, com `expert_id` opcional (lead do CRM) e nome único entre os
+        não excluídos;
+      - `app_sales`: um lançamento por app e mês (`month` = dia 1), garantido
+        por índice único parcial;
+      - `costs`: sem `app_id` = custo geral. O check `costs_shared_rules`
+        impede rateio em custo geral e exige o % no rateado;
+    - **o % fica congelado no lançamento:** `app_sales.company_share` e
+      `costs.partner_share` são copiados do app e podem ser ajustados no
+      formulário. A planilha buscava o % do app na hora, o que mudaria o
+      histórico;
+    - **só o Admin** lê e grava: políticas `admin_can_*` com `is_admin()`, como
+      o escopo pede (o SDR não vê o financeiro). Hoje todos são admin;
+    - exclusão lógica nas 3 tabelas, sem política de delete.
+  - **Cálculos** em `src/lib/finance/calc.ts`, como funções puras com as
+    fórmulas da planilha. O banco devolve as vendas (uma linha por app e mês) e
+    os custos somados por app, mês e categoria (`loadEntries`). Ficaram assim:
+    - resultado acumulado: desde o primeiro mês com lançamento;
+    - divisão por zero: aparece "—" (a planilha mostrava 0);
+    - IA por assinante e assinantes: o mês final do período.
+  - **Regras:**
+    - app com lançamentos não pode ser excluído (o botão some). O caminho é o
+      status "Encerrado", e app encerrado sem lançamento no período sai do
+      Resumo;
+    - venda repetida no mesmo app e mês mostra "Já existe o lançamento de…".
+  - **Lead do CRM:** o formulário do app lista os leads em Negociação ou Ganho.
+    Escolher um preenche o influenciador, o @, o nicho, o % da última proposta
+    aceita e a data do contrato do projeto. Sem lead, o % sugerido é 40%.
+  - **Gráfico do Mês a mês:**
+    - o verde-limão da marca (`--viz-series-1`) reprovou na faixa de
+      luminosidade do validador para uma paleta de 2 cores;
+    - por isso são dois gráficos de uma série ("Receita da empresa" e
+      "Resultado"), lado a lado e na mesma escala, em vez de duas cores ou dois
+      eixos;
+    - o resultado negativo desce da linha do zero;
+    - a tabela embaixo é a versão em tabela;
+    - os valores do eixo usam um formatador próprio. O `notation: "compact"`
+      do Intl sai "6,0 mil" no Node e "6 mil" no Chrome, o que dava erro de
+      hydration.
+  - **Telas:** o filtro de mês reaproveita o `DashboardFilters` do dashboard.
+    As tabelas largas rolam dentro do cartão (`data-allow-scroll`, que o
+    `mobile.ts` respeita).
+  - **Testes:**
+    - `tests/db/financeiro.ts` (27):
+      - a parte sem banco refaz o exemplo da planilha (out–nov/2026) e confere
+        os 14 números dela;
+      - a parte com banco usa 2001, para não misturar com dados reais;
+    - `tests/e2e/financeiro.ts` (10): também usa 2001 e apaga o que criou;
+    - `etapa12`: 22 tabelas.
+  - **Resultados (2026-11-17):**
+    - migration 0013 aplicada: 14 migrations, 41 leads intactos;
+    - `tests/db/financeiro.ts`: 27/27;
+    - `etapa12`: 13/13;
+    - `next start`: `financeiro` 10/10, `mobile` 27/27 (com as 8 telas
+      novas) e `apresentacoes` 11/11;
+    - `npm run preview`: `financeiro` 10/10 e `apresentacoes` 11/11;
+    - pacote: 2,51 MiB comprimido (`wrangler deploy --dry-run`), abaixo do
+      limite de 3 MiB do plano grátis, e sem segredos no `.open-next`.
+  - **Preview local degrada com o uso:** depois de umas 700 requisições, até o
+    `/login` e o `favicon.ico` levavam de 8 a 20 s, com o workerd quase sem uso
+    de CPU. Do Node, o banco e o Auth respondiam em menos de 200 ms. Os testes
+    falharam por tempo. Reiniciado com `npx opennextjs-cloudflare preview`
+    (sem recompilar), tudo passou. Se um teste no preview falhar por tempo,
+    reinicie o preview antes de investigar.
 - **2026-11-13 — Visual escuro premium com verde (pedido do usuário, referência: Mestres CRM):**
   - **Tema:** o sistema passou a ser só escuro. O `<html>` tem a classe `dark`, e a
     paleta de `.dark` em `globals.css` usa fundo quase preto esverdeado e o
@@ -678,3 +764,5 @@ etapa. Siga a ordem de implementação da seção 8.
 - Extra: cadastro pelo link em "Novo expert" + `/analisar` (2026-11-09).
 - Extra: apresentações personalizadas com link curto (2026-11-16; migration
   aplicada, testes passando e publicado na Cloudflare).
+- Extra: Central Financeira (2026-11-17; é a Fase 4 do escopo, no formato da
+  planilha do usuário).

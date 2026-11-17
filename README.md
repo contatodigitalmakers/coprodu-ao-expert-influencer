@@ -3,7 +3,8 @@
 Sistema interno para prospectar experts e vender co-produção de apps: experts,
 score de qualificação, pipeline, cadências, fila do dia do SDR, templates,
 agenda de diagnóstico, apresentações com link curto, propostas com página
-pública e dashboard.
+pública e dashboard. A Central Financeira acompanha o resultado de cada app em
+coprodução e da empresa.
 
 Escopo completo em [docs/escopo.md](docs/escopo.md). As regras do projeto, as
 decisões tomadas e a arquitetura estão em [CLAUDE.md](CLAUDE.md).
@@ -256,6 +257,70 @@ PDF, use `Ctrl/Cmd + P` → "Salvar como PDF".
 **Privacidade:** a página tem `noindex` e não pode ser embutida em outro site.
 Quem tem o link vê a apresentação, então não publique links em lugares
 abertos.
+
+## Central Financeira
+
+É o controle financeiro dos apps em coprodução. Veio da planilha
+`Controle_Apps_Coproducao.xlsx`, com as mesmas contas. Fica no menu, abaixo
+da Central Comercial, e só o Admin vê.
+
+| Página | O que mostra |
+| --- | --- |
+| **Resumo** | resultado de cada app e da empresa no período: receita, custos, tráfego, IA, acerto, lucro, margem, CPA, ROAS e IA por assinante |
+| **Mês a mês** | evolução da empresa no ano, com o resultado acumulado e o gráfico "Receita da empresa x Resultado" |
+| **Apps** | cadastro de cada app: influenciador, % da empresa, status, plataforma e datas |
+| **Vendas** | uma linha por app por mês, com os números do relatório da plataforma |
+| **Custos** | uma linha por despesa, do app ou Geral (da empresa) |
+
+**Como usar no mês:**
+
+1. **Apps:** cadastre cada app uma vez. "Lead do CRM" é opcional: escolher o
+   lead preenche o influenciador, o @, o nicho, o % da proposta aceita e a data
+   do contrato. Sem lead, o % sugerido é 40% para a empresa.
+2. **Vendas:** no começo do mês, lance o mês anterior de cada app, com os
+   números do relatório da Hotmart, Kiwify etc.:
+   - vendas novas;
+   - assinantes ativos no fim do mês;
+   - cancelamentos;
+   - faturamento bruto;
+   - taxas da plataforma;
+   - reembolsos e chargebacks.
+
+   O formulário mostra a comissão líquida e a parte de cada um enquanto você
+   digita.
+3. **Custos:** lance cada despesa no dia em que ela aconteceu.
+   - **Custo do app** vai no app; **custo da empresa** vai em Geral, incluindo
+     os impostos.
+   - **IA no app (API)** vai no app que consumiu (use uma chave de API por app).
+     **IA de desenvolvimento** vai em Geral.
+   - **Rateado com o influenciador?** Marque nos custos que o contrato manda
+     dividir, como o tráfego. O influenciador devolve a parte dele, que aparece
+     como "acerto a receber".
+4. **Resumo** e **Mês a mês:** escolha o período e confira os números.
+
+**Contas** (as mesmas da planilha):
+
+- **Comissão líquida** = faturamento bruto − taxas − reembolsos.
+- **Receita da empresa** = comissão líquida × % da empresa.
+- **Lucro do app** = receita da empresa − custos do app + acerto a receber.
+- **Resultado da empresa** = lucro de todos os apps − custos gerais.
+- **Assinantes ativos** e **IA por assinante** usam o último mês do período.
+
+**Regras:**
+
+- **O % fica gravado em cada lançamento.** Mudar o % do app vale para os
+  próximos lançamentos; os antigos não mudam. Dá para ajustar o % de um
+  lançamento no próprio formulário.
+- **Um lançamento de vendas por app por mês.** Para corrigir, edite o que já
+  existe.
+- **App com lançamentos não pode ser excluído.** Mude o status para
+  "Encerrado": sem lançamentos no período, ele some do Resumo.
+- **Listas fixas:** as categorias de custo e os status do app são os da
+  planilha. Para incluir uma categoria, peça a mudança no código
+  ([src/lib/finance/labels.ts](src/lib/finance/labels.ts) e o enum
+  `cost_category`).
+- **Divisão:** é o % fixo do app desde a primeira venda, como na planilha. A
+  regra do escopo de recuperar o setup primeiro não é usada aqui.
 
 ## Testes
 
