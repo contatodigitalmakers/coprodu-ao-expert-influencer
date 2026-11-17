@@ -22,9 +22,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // suppressHydrationWarning: extensões do navegador (ex.: BRy, de assinatura
+    // digital) gravam atributos no <html> antes do React carregar. Vale só para
+    // os atributos desta tag; erros nos componentes continuam aparecendo.
     <html
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
