@@ -245,6 +245,10 @@ etapa. Siga a ordem de implementação da seção 8.
     falharam por tempo. Reiniciado com `npx opennextjs-cloudflare preview`
     (sem recompilar), tudo passou. Se um teste no preview falhar por tempo,
     reinicie o preview antes de investigar.
+  - **Publicado em 2026-11-17** (versão `b9e4f69e`):
+    - `tests/e2e/financeiro.ts` deu 10/10 no endereço publicado;
+    - `/financeiro` sem login redireciona para o login;
+    - o banco ficou sem dados de teste e o login de teste foi apagado.
 - **2026-11-13 — Visual escuro premium com verde (pedido do usuário, referência: Mestres CRM):**
   - **Tema:** o sistema passou a ser só escuro. O `<html>` tem a classe `dark`, e a
     paleta de `.dark` em `globals.css` usa fundo quase preto esverdeado e o
